@@ -1,4 +1,8 @@
-# epii-node-server
+# epii-server
+###### `epii-node-server`
+
+[![Build Status](https://travis-ci.org/epii-io/epii-node-server.svg?branch=master)](https://travis-ci.org/epii-io/epii-node-server)
+[![Coverage Status](https://coveralls.io/repos/github/epii-io/epii-node-server/badge.svg?branch=master)](https://coveralls.io/github/epii-io/epii-node-server?branch=master)
 
 A koa-based server with preset MVC model.
 
