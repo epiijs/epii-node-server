@@ -24,7 +24,7 @@ module.exports = function (app) {
     } else {
       middles[name] = middle
     }
-    // compose after composed
+    // auto compose after composed
     if (middleMix) {
       middleMix = composeMiddle()
     }
@@ -52,9 +52,9 @@ module.exports = function (app) {
   }
 
   loader.load(middleDir, loadMiddle)
-  middleMix = composeMiddle()
   loader.watch('middleware', middleDir, loadMiddle)
 
+  middleMix = composeMiddle()
   app.use(async function (ctx, next) {
     await middleMix.call(null, ctx, next)
   })

@@ -69,7 +69,7 @@ module.exports = {
     title: 'EPII Avatar',
     metas: [],
     styles: 'reset.css',
-    favico: 'epii-icon.png'
+    icon: 'epii-icon.png'
   },
   body: {
     scripts: 'jquery-2.2.2.min.js'

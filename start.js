@@ -3,5 +3,5 @@
 const epii = require('./')
 
 epii([
-  require('./domain/avatar/config')
+  require('./example/avatar/config')
 ])

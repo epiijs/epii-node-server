@@ -1,8 +1,6 @@
 'use strict'
 
 const http = require('http')
-
-const me = require('./package.json')
 const assist = require('./kernel/assist.js')
 const logger = require('./kernel/logger.js')
 const server = require('./kernel/server.js')
@@ -14,16 +12,18 @@ module.exports.server = server
  * start server
  *
  * @param  {Object} config - config for apps
- * @param  {Object} plugin - { name : handler }
+ * @param  {Object} plugin - { [name]: [handler] }
+ * @return {Object[]} http.Server instances
  */
 function startServer(config, plugin) {
-  logger.info(`epii server version: ${me.version}`)
+  var version = require('./package.json').version
+  logger.info(`epii server version: ${version}`)
   var configs = assist.arrayify(config)
   if (configs.length === 0) {
     return logger.warn('server config not provided')
   }
 
-  configs.forEach(function (c) {
+  return configs.map(function (c) {
     // create server handler
     var handler = server.create(c, plugin)
 
@@ -39,5 +39,7 @@ function startServer(config, plugin) {
     // output launch info
     logger.done(`start server: ${c.name}`)
     logger.done(` |- port: ${c.port}`)
+
+    return httpServer
   })
 }

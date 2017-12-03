@@ -1,6 +1,6 @@
 {
   "name": "epii-server",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "epii server",
   "engines": {
     "node": ">=8.0.0"
@@ -9,7 +9,7 @@
   "scripts": {
     "self": "node start.js",
     "lint": "eslint .",
-    "test": "eslint . && nyc --reporter=lcov mocha test/index.js",
+    "test": "eslint . && nyc --reporter=lcov mocha test/index.js --exit",
     "lcov": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
@@ -30,23 +30,22 @@
   },
   "homepage": "https://github.com/epii-io/epii-node-server#readme",
   "dependencies": {
-    "epii-html5": "^0.2.1",
-    "koa": "^2.3.0",
-    "koa-body": "^2.3.0",
+    "epii-html5": "^0.2.2",
+    "koa": "^2.4.1",
+    "koa-body": "^2.5.0",
     "koa-compose": "^4.0.0",
-    "koa-router": "^7.2.1",
-    "koa-send": "^4.1.0",
-    "lodash": "^4.17.4",
-    "request": "^2.81.0"
+    "koa-router": "^7.3.0",
+    "koa-send": "^4.1.1",
+    "lodash": "^4.17.4"
   },
   "optionalDependencies": {
     "chalk": "^1.1.3"
   },
   "devDependencies": {
-    "coveralls": "^2.13.1",
-    "eslint": "^4.1.1",
-    "mocha": "^3.4.2",
-    "node-fetch": "^1.7.1",
-    "nyc": "^11.0.2"
+    "coveralls": "^3.0.0",
+    "eslint": "^4.12.1",
+    "mocha": "^4.0.1",
+    "node-fetch": "^1.7.3",
+    "nyc": "^11.3.0"
   }
 }

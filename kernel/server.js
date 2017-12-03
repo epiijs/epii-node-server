@@ -17,9 +17,8 @@ module.exports = {
  */
 function createServer(config, plugin) {
   // verify config
-  if (!config || !config.name) {
-    throw new Error('require config')
-  }
+  if (!config) throw new Error('require config')
+  if (!config.name) config.name = 'unknown'
 
   // create koa instance
   var Koa = require('koa')
