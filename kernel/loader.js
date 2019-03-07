@@ -48,7 +48,7 @@ function loadFiles(dir, handler) {
       })
     })
     .catch(error => {
-      logger.warn(`directory not found`)
+      logger.warn(`directory ${dir} not found`)
     })
 }
 

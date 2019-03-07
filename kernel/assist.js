@@ -53,11 +53,13 @@ function tryWatch(target, callback) {
     return logger.halt('invalid watch callback')
   }
 
-  return fs.watch(
-    target, { persistent: true, recursive: true},
-    function (e, file) {
-      // todo: exact watch
-      callback(e, file)
-    }
-  )
+  if (fs.existsSync(target)) {
+    return fs.watch(
+      target, { persistent: true, recursive: true},
+      function (e, file) {
+        // todo: exact watch
+        callback(e, file)
+      }
+    )
+  }
 }
