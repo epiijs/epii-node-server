@@ -1,5 +1,3 @@
-'use strict'
-
 const assist = require('./assist')
 const logger = require('./logger')
 const recipe = require('./recipe')
@@ -15,7 +13,7 @@ module.exports = {
  * @param  {Object} plugin - { [name]: [handler] }
  * @return {Function} http.Server callback
  */
-function createServer(config, plugin) {
+async function createServer(config, plugin) {
   // verify config
   if (!config) throw new Error('require config')
   if (!config.name) config.name = 'unknown'
@@ -31,7 +29,7 @@ function createServer(config, plugin) {
   assist.internal(app.epii, 'config', config, { enumerable: false })
 
   // apply recipes
-  recipe.apply(app)
+  await recipe.apply(app)
 
   // bind event
   app.on('error', function (error) {

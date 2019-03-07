@@ -1,11 +1,8 @@
-'use strict'
-
-const fs = require('fs')
 const path = require('path')
 const send = require('koa-send')
 
-module.exports = function (app) {
-  var config = app.epii.config
+module.exports = async function (app) {
+  const config = app.epii.config
 
   app.use(async function (ctx, next) {
     var prefix = config.prefix.static

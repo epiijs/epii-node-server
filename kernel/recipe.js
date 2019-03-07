@@ -1,5 +1,3 @@
-'use strict'
-
 const path = require('path')
 const loader = require('./loader.js')
 
@@ -13,11 +11,11 @@ module.exports = {
  * @param {Object} app
  * @return {Object} recipes
  */
-function applyRecipe(app) {
+async function applyRecipe(app) {
   var order = []
   var recipes = {}
 
-  loader.load(
+  await loader.load(
     path.join(__dirname, '../recipe'),
     function (file, recipe) {
       var name = path.basename(file.slice(0, -3))
@@ -29,6 +27,8 @@ function applyRecipe(app) {
     }
   )
 
-  order.forEach(name => recipes[name](app))
+  for (let i = 0; i < order.length; i ++) {
+    await recipes[order[i]](app)
+  }
   return recipes
 }

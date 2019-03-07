@@ -23,9 +23,9 @@ function startServer(config, plugin) {
     return logger.warn('server config not provided')
   }
 
-  return configs.map(function (c) {
+  return configs.map(async function (c) {
     // create server handler
-    var handler = server.create(c, plugin)
+    var handler = await server.create(c, plugin)
 
     // start server
     var httpServer = http

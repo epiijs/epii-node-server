@@ -6,9 +6,9 @@ const loader = require('../kernel/loader')
 
 const renders = {}
 
-module.exports = function (app) {
+module.exports = async function (app) {
   // load operator
-  loader.load(
+  await loader.load(
     path.join(__dirname, '../render'),
     (file, render) => {
       var name = path.basename(file).slice(0, -3)

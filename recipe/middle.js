@@ -5,7 +5,7 @@ const compose = require('koa-compose')
 const logger = require('../kernel/logger')
 const loader = require('../kernel/loader')
 
-module.exports = function (app) {
+module.exports = async function (app) {
   var config = app.epii.config
   var middleDir = path.join(config.path.root, config.path.server.middleware)
 
@@ -51,7 +51,7 @@ module.exports = function (app) {
     return compose(series)
   }
 
-  loader.load(middleDir, loadMiddle)
+  await loader.load(middleDir, loadMiddle)
   loader.watch('middleware', middleDir, loadMiddle)
 
   middleMix = composeMiddle()

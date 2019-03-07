@@ -35,7 +35,7 @@ function normalizeAction(action) {
   }
 }
 
-module.exports = function (app) {
+module.exports = async function (app) {
   var config = app.epii.config
   var router = require('koa-router')()
 
@@ -77,7 +77,7 @@ module.exports = function (app) {
 
   // use loader
   var routerDir = path.join(config.path.root, config.path.server.controller)
-  loader.load(routerDir, loadAction)
+  await loader.load(routerDir, loadAction)
   loader.watch('controller', routerDir, loadAction)
 
   // use router

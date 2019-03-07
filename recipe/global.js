@@ -1,8 +1,6 @@
-'use strict'
-
 const assist = require('../kernel/assist')
 
-module.exports = function (app) {
+module.exports = async function (app) {
   if (!app.epii) {
     throw new Error('invalid epii app')
   }

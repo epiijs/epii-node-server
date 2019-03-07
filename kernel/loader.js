@@ -1,7 +1,6 @@
-'use strict'
-
 const fs = require('fs')
 const path = require('path')
+const util = require('util')
 const assist = require('./assist')
 const logger = require('./logger')
 
@@ -16,9 +15,9 @@ module.exports = {
  * load module from file
  *
  * @param  {String} file - path for module
- * @param  {Function} callback - fn(file, module)
+ * @param  {Function} handler - fn(file, module)
  */
-function loadFile(file, callback) {
+function loadFile(file, handler) {
   // verify *.js
   if (!/\.js$/.test(file)) return
 
@@ -26,7 +25,7 @@ function loadFile(file, callback) {
   try {
     delete require.cache[require.resolve(file)]
     var o = require(file)
-    if (callback) callback(file, o)
+    if (handler) handler(file, o)
   } catch (error) {
     logger.halt('failed to load', file)
     console.error(error.message)
@@ -37,14 +36,20 @@ function loadFile(file, callback) {
  * load modules from path
  *
  * @param  {String} dir - path for modules
- * @param  {Function} callback - fn(file, module)
+ * @param  {Function} handler - fn(file, module)
+ * @return {Promise}
  */
-function loadFiles(dir, callback) {
-  var files = fs.readdirSync(dir)
-  files.forEach(file => {
-    var filePath = path.join(dir, file)
-    loadFile(filePath, callback)
-  })
+function loadFiles(dir, handler) {
+  return util.promisify(fs.readdir)(dir)
+    .then(files => {
+      files.forEach(file => {
+        const filePath = path.join(dir, file)
+        loadFile(filePath, handler)
+      })
+    })
+    .catch(error => {
+      logger.warn(`directory not found`)
+    })
 }
 
 /**
