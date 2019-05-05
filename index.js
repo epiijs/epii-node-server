@@ -1,5 +1,3 @@
-'use strict'
-
 const http = require('http')
 const assist = require('./kernel/assist.js')
 const logger = require('./kernel/logger.js')

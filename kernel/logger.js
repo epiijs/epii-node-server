@@ -1,6 +1,4 @@
-'use strict'
-
-var chalk
+let chalk
 try {
   chalk = require('chalk')
 } catch (error) {}

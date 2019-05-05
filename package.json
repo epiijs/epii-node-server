@@ -1,6 +1,6 @@
 {
   "name": "epii-server",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "epii server",
   "engines": {
     "node": ">=8.0.0"
@@ -31,21 +31,21 @@
   "homepage": "https://github.com/epii-io/epii-node-server#readme",
   "dependencies": {
     "epii-html5": "^0.2.2",
-    "koa": "^2.4.1",
-    "koa-body": "^2.5.0",
+    "koa": "^2.7.0",
+    "koa-body": "^4.1.0",
     "koa-compose": "^4.0.0",
     "koa-router": "^7.3.0",
-    "koa-send": "^4.1.1",
-    "lodash": "^4.17.4"
+    "koa-send": "^5.0.0",
+    "lodash": "^4.17.11"
   },
   "optionalDependencies": {
     "chalk": "^1.1.3"
   },
   "devDependencies": {
-    "coveralls": "^3.0.0",
-    "eslint": "^4.12.1",
-    "mocha": "^4.0.1",
-    "node-fetch": "^1.7.3",
-    "nyc": "^11.3.0"
+    "coveralls": "^3.0.3",
+    "eslint": "^5.16.0",
+    "mocha": "^6.1.4",
+    "node-fetch": "^2.5.0",
+    "nyc": "^14.1.0"
   }
 }

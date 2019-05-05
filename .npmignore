@@ -2,6 +2,7 @@ tmp
 npm-debug.log
 coverage
 lcov.info
+.nyc_output
 
 .eslintignore
 .eslintrc
