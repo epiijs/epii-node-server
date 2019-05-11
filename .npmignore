@@ -3,6 +3,7 @@ npm-debug.log
 coverage
 lcov.info
 .nyc_output
+.vscode
 
 .eslintignore
 .eslintrc

@@ -1,11 +1,5 @@
-const fs = require('fs')
-const logger = require('./logger.js')
-
-module.exports = {
-  internal,
-  arrayify,
-  tryWatch
-}
+const fs = require('fs');
+const logger = require('./logger.js');
 
 /**
  * define internal method
@@ -16,13 +10,13 @@ module.exports = {
  * @param  {Object=} options
  */
 function internal(target, key, value, options) {
-  if (!target) return
+  if (!target) return;
   Object.defineProperty(target, key, {
     value,
     writable: false,
     configurable: false,
-    enumerable: options && options.enumerable || false
-  })
+    enumerable: (options && options.enumerable) || true
+  });
 }
 
 /**
@@ -32,8 +26,8 @@ function internal(target, key, value, options) {
  * @return {*[]}
  */
 function arrayify(o) {
-  if (o == null) return []
-  return Array.isArray(o) ? o : [o]
+  if (o == null) return [];
+  return Array.isArray(o) ? o : [o];
 }
 
 /**
@@ -45,19 +39,27 @@ function arrayify(o) {
  */
 function tryWatch(target, callback) {
   if (!target) {
-    return logger.halt('invalid watch target')
+    return logger.halt('invalid watch target');
   }
   if (!callback || typeof callback !== 'function') {
-    return logger.halt('invalid watch callback')
+    return logger.halt('invalid watch callback');
   }
 
-  if (fs.existsSync(target)) {
-    return fs.watch(
-      target, { persistent: true, recursive: true},
-      function (e, file) {
-        // todo: exact watch
-        callback(e, file)
-      }
-    )
+  if (!fs.existsSync(target)) {
+    return logger.warn('target not existed');
   }
+  return fs.watch(
+    target,
+    { persistent: true, recursive: true },
+    (e, file) => {
+      // todo - exact watch
+      callback(e, file);
+    }
+  );
 }
+
+module.exports = {
+  internal,
+  arrayify,
+  tryWatch
+};

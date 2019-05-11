@@ -1,11 +1,9 @@
-'use strict'
-
 module.exports = [
   {
     path: '/',
     verb: 'get',
     body: async function () {
-      return this.epii.view()
+      return this.epii.view();
     }
   }
 ]

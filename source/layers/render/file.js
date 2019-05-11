@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('fs');
 
 module.exports = {
   /**
@@ -6,9 +6,9 @@ module.exports = {
    *
    * @param  {Object} result
    */
-  solve: async function (result) {
-    this.set('content-type', 'application/octet-stream')
-    this.body = fs.createReadStream(result.file)
+  solve: async (ctx, result) => {
+    ctx.set('content-type', 'application/octet-stream');
+    ctx.body = fs.createReadStream(result.file);
   },
 
   /**
@@ -17,10 +17,10 @@ module.exports = {
    * @param  {String=} file - file name
    * @return {Object} file result
    */
-  order: function (file) {
+  order: (file) => {
     return {
       type: 'file',
-      file: file
-    }
+      file
+    };
   }
-}
+};

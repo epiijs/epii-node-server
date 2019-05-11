@@ -1,4 +1,4 @@
-const vm = require('vm')
+const vm = require('vm');
 
 /**
  * sandbox for epii server
@@ -8,7 +8,7 @@ const vm = require('vm')
  */
 module.exports = function (config, plugin) {
   return vm.runInNewContext(
-    'require("./")(config, plugin)',
+    'require("./source/")(config, plugin)',
     { require, config, plugin }
-  )
-}
+  );
+};

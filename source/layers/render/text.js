@@ -4,10 +4,9 @@ module.exports = {
    *
    * @param  {Object} result
    */
-  solve: async function (result) {
-    var model = result.model
-    this.set('content-type', 'text/plain')
-    this.body = model.toString()
+  solve: async (ctx, result) => {
+    ctx.set('content-type', 'text/plain');
+    ctx.body = result.model.toString();
   },
 
   /**
@@ -16,10 +15,10 @@ module.exports = {
    * @param  {String=} model
    * @return {Object} text result
    */
-  order: function (model) {
+  order: (model) => {
     return {
       type: 'text',
       model: model
-    }
+    };
   }
-}
+};
