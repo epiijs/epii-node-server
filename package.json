@@ -1,6 +1,6 @@
 {
   "name": "epii-server",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "epii server",
   "engines": {
     "node": ">=8.0.0"
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/epii-io/epii-node-server#readme",
   "dependencies": {
-    "epii-html5": "^0.2.2",
+    "epii-html5": "^0.3.0",
     "koa": "^2.7.0",
     "koa-body": "^4.1.0",
     "koa-compose": "^4.0.0",
