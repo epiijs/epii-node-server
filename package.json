@@ -1,11 +1,11 @@
 {
   "name": "epii-server",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "epii server",
   "engines": {
     "node": ">=8.0.0"
   },
-  "main": "index.js",
+  "main": "source/index.js",
   "scripts": {
     "play": "node start.js",
     "lint": "eslint .",
