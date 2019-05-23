@@ -1,5 +1,5 @@
 const path = require('path');
-const HTML5 = require('epii-html5');
+const HTML5 = require('@epiijs/html5');
 
 /**
  * resolve meta path

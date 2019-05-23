@@ -1,4 +1,4 @@
-const fs = require('fs');
+const chokidar = require('chokidar');
 const logger = require('./logger.js');
 
 /**
@@ -44,18 +44,15 @@ function tryWatch(target, callback) {
   if (!callback || typeof callback !== 'function') {
     return logger.halt('invalid watch callback');
   }
-
-  if (!fs.existsSync(target)) {
-    return logger.warn('target not existed');
-  }
-  return fs.watch(
+  return chokidar.watch(
     target,
-    { persistent: true, recursive: true },
-    (e, file) => {
-      // todo - exact watch
-      callback(e, file);
+    {
+      persistent: true,
+      ignoreInitial: true,
+      followSymlinks: false
     }
-  );
+  )
+    .on('all', callback);
 }
 
 module.exports = {

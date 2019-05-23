@@ -6,4 +6,4 @@ module.exports = [
       return this.epii.view();
     }
   }
-]
+];

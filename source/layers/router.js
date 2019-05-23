@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const Router = require('koa-router');
+const Router = require('@eggjs/router');
 const assist = require('../kernel/assist');
 const loader = require('../kernel/loader');
 const logger = require('../kernel/logger');
@@ -18,15 +18,17 @@ const verbs = [
 function lintAction(action) {
   // normalize action verb
   // support 'verb' & 'method'
-  let routeVerb = (action.verb || action.method || 'GET').toLowerCase();
+  let routeVerb = (action.verb || action.method || 'GET').toUpperCase();
   // use 'GET' verb by default
   if (verbs.indexOf(routeVerb) < 0) {
     routeVerb = 'GET';
   }
 
-  // normalize action path & body
+  // todo - normalize action path & body
+  // no idea why action = {} but truely happened
   const routePath = action.path;
   const routeBody = action.body;
+  if (!routePath || !routeBody) return null;
 
   return {
     verb: routeVerb,
@@ -50,7 +52,7 @@ module.exports = async function routerLayer(app) {
   const config = app.epii.config;
   const routerDir = path.join(config.path.root, config.path.server.controller);
   const routerFiles = fs.readdirSync(routerDir);
-  const router = Router();
+  const router = new Router();
   const renderDir = path.join(__dirname, 'render');
   const renderFiles = fs.readdirSync(renderDir);
   const renders = {};
@@ -83,15 +85,15 @@ module.exports = async function routerLayer(app) {
   }
 
   function loadAction(e, o) {
-    assist.arrayify(o).map(lintAction).forEach(action => {
+    assist.arrayify(o).map(lintAction).filter(Boolean).forEach(action => {
       // reload action
       const change = router.stack.findIndex(layer => {
         return layer.name === action.path && layer.methods.indexOf(action.verb) >= 0;
       });
       if (change >= 0) {
-        logger.info('reload action', action.path);
         router.stack.splice(change, 1);
       }
+      logger.info('reload action', action.path);
 
       // route action
       // call router.[verb]

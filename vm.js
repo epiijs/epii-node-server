@@ -6,7 +6,7 @@ const vm = require('vm');
  * @param {Object=} config
  * @param {Object=} plugin
  */
-module.exports = function (config, plugin) {
+module.exports = (config, plugin) => {
   return vm.runInNewContext(
     'require("./source/")(config, plugin)',
     { require, config, plugin }

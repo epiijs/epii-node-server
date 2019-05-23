@@ -41,14 +41,16 @@ function loadFile(file, callback) {
  * @return {Object}
  */
 function autoLoadDir(name, dir, callback) {
+  // todo - why so many callback invoked
   // watcher already cached
   if (watchers[name]) return watchers[name];
 
   // create fs watcher
   const watcher = assist.tryWatch(dir, (e, file) => {
-    logger.warn(`[${name}] ${e} ${file}`);
-    const filePath = path.join(dir, file);
-    loadFile(filePath, callback);
+    logger.warn(`[${name}] ${e} ${path.relative(dir, file)}`);
+    if (e === 'add' || e === 'change') {
+      loadFile(file, callback);
+    }
   });
 
   // cache fs watcher

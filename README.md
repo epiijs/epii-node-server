@@ -1,14 +1,13 @@
 # epii-server
-###### `epii-node-server`
 
-[![Build Status](https://travis-ci.org/epii-io/epii-node-server.svg?branch=master)](https://travis-ci.org/epii-io/epii-node-server)
-[![Coverage Status](https://coveralls.io/repos/github/epii-io/epii-node-server/badge.svg?branch=master)](https://coveralls.io/github/epii-io/epii-node-server?branch=master)
+[![Build Status](https://travis-ci.org/epiijs/epii-server.svg?branch=master)](https://travis-ci.org/epiijs/epii-server)
+[![Coverage Status](https://coveralls.io/repos/github/epiijs/epii-server/badge.svg?branch=master)](https://coveralls.io/github/epiijs/epii-server?branch=master)
 
 A koa-based server with preset MVC model.
 
 **Please upgrade to v3+ for node 8 !!!**
 
-- koa-router for controller
+- @eggjs/router for controller
 - koa-send for static files
 - koa-body for body parse & file upload
 - epii-html5 for main document
@@ -111,12 +110,12 @@ See also `epii-html5`.
 
 ### install as dependency
 ```sh
-npm install --save epii-server@latest
+npm install --save @epiijs/server@latest
 ```
 
 ### use api to start server
 ```js
-const epiiServer = require('epii-server')
+const epiiServer = require('@epiijs/server')
 
 epiiServer([{
   name: 'YOUR-APP-NAME',
