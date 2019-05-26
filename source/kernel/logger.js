@@ -1,4 +1,4 @@
-/* eslint-disable global-require */
+/* eslint-disable global-require, no-console */
 let chalk;
 try {
   chalk = require('chalk');

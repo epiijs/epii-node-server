@@ -1,5 +1,10 @@
-const chokidar = require('chokidar');
+/* eslint-disable global-require */
+
 const logger = require('./logger.js');
+
+function isDebug() {
+  return process.env.NODE_ENV !== 'production';
+}
 
 /**
  * define internal method
@@ -38,6 +43,8 @@ function arrayify(o) {
  * @return {Object} fs.Watcher
  */
 function tryWatch(target, callback) {
+  if (!isDebug()) return undefined;
+  const chokidar = require('chokidar');
   if (!target) {
     return logger.halt('invalid watch target');
   }
@@ -56,6 +63,7 @@ function tryWatch(target, callback) {
 }
 
 module.exports = {
+  isDebug,
   internal,
   arrayify,
   tryWatch
