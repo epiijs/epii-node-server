@@ -51,7 +51,7 @@ module.exports = async function middleLayer(app) {
     }
     // compose reload unit after first composed
     if (middleItems.$mixed) {
-      middleItems.$mixed = composeMiddle();
+      composeMiddle();
     }
   }
 

@@ -6,19 +6,19 @@ module.exports = {
    */
   solve: async (ctx, result) => {
     ctx.set('content-type', 'text/plain');
-    ctx.body = result.model.toString();
+    ctx.body = result.data.toString();
   },
 
   /**
    * get text result
    *
-   * @param  {String=} model
+   * @param  {String=} data
    * @return {Object} text result
    */
-  order: (model) => {
+  order: (data) => {
     return {
       type: 'text',
-      model: model
+      data
     };
   }
 };

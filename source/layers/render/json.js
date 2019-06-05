@@ -6,19 +6,19 @@ module.exports = {
    */
   solve: async (ctx, result) => {
     ctx.set('content-type', 'application/json');
-    ctx.body = result.model || {};
+    ctx.body = result.data || {};
   },
 
   /**
    * get json result
    *
-   * @param  {Object=} model
+   * @param  {Object} data
    * @return {Object} json result
    */
-  order: (model) => {
+  order: (data) => {
     return {
       type: 'json',
-      model
+      data
     };
   }
 };
