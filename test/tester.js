@@ -1,9 +1,7 @@
 const assert = require('assert')
 const crypto = require('crypto')
 const fs = require('fs')
-const path = require('path')
 const fetch = require('node-fetch')
-const _ = require('lodash')
 
 function getMD5(file, cb) {
   var hash = crypto.createHash('md5')

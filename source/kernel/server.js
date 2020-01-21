@@ -13,8 +13,8 @@ const logger = require('./logger');
  * @return {Object} linted config
  */
 function verifyConfig(config) {
-  if (!config) throw new Error('require config');
-  const result = Object.assign({}, config);
+  if (!config) throw new Error('config required');
+  const result = { ...config };
   if (!result.name) result.name = 'unknown';
   return result;
 }
