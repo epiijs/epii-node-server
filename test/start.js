@@ -17,6 +17,9 @@ var epiiServer = require('../vm')([
     },
     prefix: {
       static: '__static'
+    },
+    expert: {
+      'well-known': true
     }
   }
 ])

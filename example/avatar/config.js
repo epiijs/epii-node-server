@@ -14,5 +14,8 @@ module.exports = {
   },
   prefix: {
     static: '__static'
+  },
+  expert: {
+    'well-known': true
   }
 }

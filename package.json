@@ -1,6 +1,6 @@
 {
   "name": "@epiijs/server",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "description": "epii server",
   "engines": {
     "node": ">=8.0.0"
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/epii-io/epii-node-server.git"
+    "url": "git+https://github.com/epiijs/epii-server.git"
   },
   "keywords": [
     "epii",
@@ -26,9 +26,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/epii-io/epii-node-server/issues"
+    "url": "https://github.com/epiijs/epii-server/issues"
   },
-  "homepage": "https://github.com/epii-io/epii-node-server#readme",
+  "homepage": "https://github.com/epiijs/epii-server#readme",
   "dependencies": {
     "@eggjs/router": "^2.0.0",
     "@epiijs/html5": "^0.4.0",

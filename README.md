@@ -11,6 +11,7 @@ A koa-based server with preset MVC model.
 - koa-send for static files
 - koa-body for body parse & file upload
 - epii-html5 for main document
+- access to .well-known
 
 ## Features
 
@@ -106,6 +107,9 @@ See also `epii-html5`.
 │   └── controller
 │       └── index.js
 └── static
+    ├── (files)
+    └── .well-known
+        └── (files)
 ```
 
 ### install as dependency
@@ -115,7 +119,7 @@ npm install --save @epiijs/server@latest
 
 ### use api to start server
 ```js
-const epiiServer = require('@epiijs/server')
+const epiiServer = require('@epiijs/server');
 
 epiiServer([{
   name: 'YOUR-APP-NAME',
@@ -124,15 +128,41 @@ epiiServer([{
     root: __dirname,
     server: {
       controller: 'server/controller',
-      middleware: 'server/middleware'
+      middleware: 'server/middleware',
     },
     client: 'client',
     layout: 'layout',
     static: 'static',
-    upload: 'upload'
+    upload: 'upload',
   },
   prefix: {
-    static: '__static'
+    static: '__static',
+  },
+  expert: {
+    'well-known': true, // default false
   }
-}])
+}]);
 ```
+
+### host server by nginx + certbot
+
+Setup your node app in nginx conf.d directory.
+```nginx
+upstream your-app {
+  server 127.0.0.1:your-port;
+}
+
+server {
+  listen 80;
+  server_name your-host;
+
+  root /your-app-static-dir;
+  index index.html;
+
+  location / {
+    proxy_pass http://your-host;
+    proxy_set_header Host $host;
+  }
+}
+```
+Use certbot and it will try to validate domain by nginx conf. 

@@ -1,4 +1,3 @@
-const path = require('path')
 const tester = require('./tester.js')
 
 describe('action many verbs', function () {

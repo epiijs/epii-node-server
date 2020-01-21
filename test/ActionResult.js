@@ -86,4 +86,16 @@ describe('action result', function () {
       }
     }
   })
+
+  tester.test('static .well-known', function () {
+    return {
+      input: {
+        path: '/.well-known/test'
+      },
+      output: {
+        code: 200,
+        file: path.join(__dirname, './fixture/static/.well-known/test')
+      }
+    }
+  })
 })
