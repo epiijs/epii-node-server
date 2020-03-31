@@ -9,7 +9,7 @@ module.exports = {
       ctx.redirect(result.name);
     } else {
       ctx.set('content-type', 'text/html');
-      ctx.body = `<script>setTimeout(function(){location.href='${result.name}'})</script>`;
+      ctx.body = `<script>setTimeout(function(){location.href='${result.name}'}, 0)</script>`;
     }
   },
 

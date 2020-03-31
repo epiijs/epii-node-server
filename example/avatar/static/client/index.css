@@ -7,7 +7,7 @@ body {
   cursor: default;
   user-select: none;
   animation: breath 5s ease-in-out infinite alternate;
-  font-family: sans-serif;
+  font-family: Tahoma, sans-serif;
   font-size: 16px;
   position: relative;
   background: #5bf;

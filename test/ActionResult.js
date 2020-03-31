@@ -10,8 +10,8 @@ describe('action result', function () {
       output: {
         code: 404
       }
-    }
-  })
+    };
+  });
 
   tester.test('render null with body', function () {
     return {
@@ -22,8 +22,8 @@ describe('action result', function () {
         code: 200,
         body: 'null result with body'
       }
-    }
-  })
+    };
+  });
 
   tester.test('render text', function () {
     return {
@@ -34,8 +34,8 @@ describe('action result', function () {
         code: 200,
         text: 'hello world'
       }
-    }
-  })
+    };
+  });
 
   tester.test('render json', function () {
     return {
@@ -46,8 +46,20 @@ describe('action result', function () {
         code: 200,
         json: { 'hello': 'world' }
       }
-    }
-  })
+    };
+  });
+
+  tester.test('render jump', function () {
+    return {
+      input: {
+        path: '/debug/jump'
+      },
+      output: {
+        code: 200,
+        text: 'hello world'
+      }
+    };
+  });
 
   tester.test('render file', function () {
     return {
@@ -61,8 +73,8 @@ describe('action result', function () {
         },
         text: 'abc'
       }
-    }
-  })
+    };
+  });
 
   tester.test('render view null', function () {
     return {
@@ -72,8 +84,8 @@ describe('action result', function () {
       output: {
         code: 500
       }
-    }
-  })
+    };
+  });
 
   tester.test('render view done', function () {
     return {
@@ -84,8 +96,8 @@ describe('action result', function () {
         code: 200,
         file: path.join(__dirname, './fixture/bucket/view1.html')
       }
-    }
-  })
+    };
+  });
 
   tester.test('static .well-known', function () {
     return {
@@ -96,6 +108,6 @@ describe('action result', function () {
         code: 200,
         file: path.join(__dirname, './fixture/static/.well-known/test')
       }
-    }
-  })
-})
+    };
+  });
+});

@@ -4,7 +4,7 @@ module.exports = [
     verb: 'get',
     body: async function () {
       if (this.query.body) {
-        this.body = 'null result with body'
+        this.body = 'null result with body';
       }
     }
   },
@@ -13,7 +13,7 @@ module.exports = [
     path: '/debug/text',
     verb: 'get',
     body: async function () {
-      return this.epii.text('hello world')
+      return this.epii.text('hello world');
     }
   },
 
@@ -21,7 +21,23 @@ module.exports = [
     path: '/debug/json',
     verb: 'get',
     body: async function () {
-      return this.epii.json({ 'hello': 'world' })
+      return this.epii.json({ 'hello': 'world' });
+    }
+  },
+
+  {
+    path: '/debug/jump',
+    verb: 'get',
+    body: async function () {
+      return this.epii.jump('/debug/text');
+    }
+  },
+
+  {
+    path: '/debug/jump-non-http',
+    verb: 'get',
+    body: async function () {
+      return this.epii.jump('/debug/text', 'html')
     }
   },
 
@@ -29,8 +45,8 @@ module.exports = [
     path: '/debug/file',
     verb: 'get',
     body: async function () {
-      var path = require('path')
-      return this.epii.file(path.join(__dirname, '../../bucket/a'))
+      const path = require('path');
+      return this.epii.file(path.join(__dirname, '../../bucket/a'));
     }
   },
 
@@ -38,7 +54,7 @@ module.exports = [
     path: '/debug/view/null',
     verb: 'get',
     body: async function () {
-      return this.epii.view()
+      return this.epii.view();
     }
   },
 
@@ -46,7 +62,7 @@ module.exports = [
     path: '/debug/view/done',
     verb: 'get',
     body: async function () {
-      return this.epii.view('/debug/view1')
+      return this.epii.view('/debug/view1');
     }
   }
-]
+];
