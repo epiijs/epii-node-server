@@ -179,14 +179,15 @@ Use certbot and it will try to validate domain by nginx conf.
 
 TODO
 
-### How to serve static files without SSR
+### How to serve static files
 
-You don't have to serve index.html in CDN because of these reasons.
+You can serve your JS + CSS + Media in CDN and use SSR to render app shell html (index.html) with state.
+The recipe can perform balance between maintainability and performance.
 
-1. updates of index.html in CDN cannot be published in realtime.
-2. epii renders index.html very fast.
-3. routes will have to be written in NGINX or CDN.
+#### Why not serve index.html in CDN
 
-You can serve your JS + CSS + Media in CDN, and still use SSR to render app shell html with state. The recipe can provide balance between maintainability and performance.
+1. `index.html` in CDN can not be updated in real time.
+2. `epii-html5` can render index.html very fast.
+3. App shell HTMLs in CDN will work with tedious NGINX or CDN routes.
 
 ## Language (TODO)

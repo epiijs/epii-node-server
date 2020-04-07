@@ -1,5 +1,5 @@
 language: node_js
 node_js:
-  - "10.16.0"
+  - "12.16.1"
 after_success:
-- npm run lcov
+  - npm run lcov
