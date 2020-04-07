@@ -18,7 +18,10 @@ A koa-based server with preset MVC model.
 ### MVC pipeline
 
     (Request)
-      => Middleware => Controller => View =>
+        => / Static /
+      => / Middleware /
+      => / Router (Controller) /
+        => / Render (Model) => (View) /
     (Response)
 
 ### ASP.net-liked
@@ -33,22 +36,25 @@ module.exports = [
     verb: 'get',
     body: async function () {
       // response text/plain
-      return this.epii.text('text output')
+      return this.epii.text('text output');
 
       // response application/json
-      return this.epii.json({ state: true })
+      return this.epii.json({ state: true });
 
       // response text/html by ViewRender
-      return this.epii.view({ name: 'Li Lei' })
+      return this.epii.view({ name: 'Li Lei' });
 
       // response application/octet-stream
-      return this.epii.file('dataset.csv')
+      return this.epii.file('dataset.csv');
+
+      // response redirect
+      return this.epii.jump('/target');
     }
   }
-]
+];
 ```
 
-### support custom layout
+### Simple app shell definition
 
 ```js
 // client/index.meta.js
@@ -61,7 +67,7 @@ module.exports = {
     holder: 'client/index.html',
     scripts: 'client/index.js'
   }
-}
+};
 
 // layout/simple.meta.js
 module.exports = {
@@ -74,7 +80,7 @@ module.exports = {
   body: {
     scripts: 'jquery-2.2.2.min.js'
   }
-}
+};
 ```
 
 Or you maybe want to write HTML directly.
@@ -86,7 +92,7 @@ module.exports = {
 }
 ```
 
-See also `epii-html5`.
+See also [`epii-html5`](https://github.com/epiijs/epii-html5).
 
 ## Usage
 
@@ -94,7 +100,7 @@ See also `epii-html5`.
 
 ```sh
 (root)
-├── layout
+├── [layout]
 │   └── simple.meta.js
 ├── client
 │   ├── ViewA
@@ -117,7 +123,7 @@ See also `epii-html5`.
 npm install --save @epiijs/server@latest
 ```
 
-### use api to start server
+### use API to start server
 ```js
 const epiiServer = require('@epiijs/server');
 
@@ -136,7 +142,7 @@ epiiServer([{
     upload: 'upload',
   },
   prefix: {
-    static: '__static',
+    static: '__file',
   },
   expert: {
     'well-known': true, // default false
@@ -166,3 +172,21 @@ server {
 }
 ```
 Use certbot and it will try to validate domain by nginx conf. 
+
+## FAQ
+
+### How to contributing
+
+TODO
+
+### How to serve static files without SSR
+
+You don't have to serve index.html in CDN because of these reasons.
+
+1. updates of index.html in CDN cannot be published in realtime.
+2. epii renders index.html very fast.
+3. routes will have to be written in NGINX or CDN.
+
+You can serve your JS + CSS + Media in CDN, and still use SSR to render app shell html with state. The recipe can provide balance between maintainability and performance.
+
+## Language (TODO)

@@ -1,6 +1,6 @@
 {
   "name": "@epiijs/server",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "epii server",
   "engines": {
     "node": ">=8.0.0"
@@ -22,7 +22,7 @@
     "server"
   ],
   "contributors": [
-    "Sartrey Lee <sartrey@163.com> (http://sartrey.cn/)"
+    "Sartrey Lee <sartrey@163.com> (https://sartrey.cn/)"
   ],
   "license": "MIT",
   "bugs": {
@@ -31,7 +31,7 @@
   "homepage": "https://github.com/epiijs/epii-server#readme",
   "dependencies": {
     "@eggjs/router": "^2.0.0",
-    "@epiijs/html5": "^0.4.0",
+    "@epiijs/html5": "^0.5.1",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
     "koa-compose": "^4.1.0",
@@ -49,6 +49,6 @@
     "eslint-plugin-import": "^2.20.2",
     "mocha": "^7.1.1",
     "node-fetch": "^2.6.0",
-    "nyc": "^15.0.0"
+    "nyc": "^15.0.1"
   }
 }

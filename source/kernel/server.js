@@ -27,12 +27,11 @@ function verifyConfig(config) {
  */
 async function applyLayers(app) {
   const orders = [
-    'launch', // bind global storage
-    'extern', // bind extern middlewares
-    'static', // bind static middleware
-    'middle', // bind custom middlewares
-    'router', // bind router
-    'logger', // bind counts
+    'extend', // initial basic ability and extend aspect
+    'static', // perform static output
+    'middle', // proceed custom middlewares
+    'router', // proceed custom controllers
+    'logger', // perform analysis and save logs
   ];
   for (let i = 0; i < orders.length; i += 1) {
     const order = orders[i];

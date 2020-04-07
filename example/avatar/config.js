@@ -13,7 +13,7 @@ module.exports = {
     upload: 'upload'
   },
   prefix: {
-    static: '__static'
+    static: '__file'
   },
   expert: {
     'well-known': true
