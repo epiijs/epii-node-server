@@ -10,5 +10,5 @@ lcov.info
 .gitignore
 
 bin
-domain
 test
+example

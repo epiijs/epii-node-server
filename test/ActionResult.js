@@ -76,6 +76,21 @@ describe('action result', function () {
     };
   });
 
+  tester.test('render file', function () {
+    return {
+      input: {
+        path: '/debug/file-play'
+      },
+      output: {
+        code: 200,
+        head: {
+          'content-type': 'text/plain; charset=utf-8'
+        },
+        text: 'abc'
+      }
+    };
+  });
+
   tester.test('render view null', function () {
     return {
       input: {

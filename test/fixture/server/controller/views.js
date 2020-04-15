@@ -46,7 +46,16 @@ module.exports = [
     verb: 'get',
     body: async function () {
       const path = require('path');
-      return this.epii.file(path.join(__dirname, '../../bucket/a'));
+      return this.epii.file(path.join(__dirname, '../../bucket/a.txt'));
+    }
+  },
+
+  {
+    path: '/debug/file-play',
+    verb: 'get',
+    body: async function () {
+      const path = require('path');
+      return this.epii.file(path.join(__dirname, '../../bucket/a.txt'), 'play');
     }
   },
 

@@ -1,4 +1,6 @@
 const fs = require('fs');
+const path = require('path');
+const mime = require('mime-types');
 
 module.exports = {
   /**
@@ -7,8 +9,15 @@ module.exports = {
    * @param  {Object} result
    */
   solve: async (ctx, result) => {
-    ctx.set('content-type', 'application/octet-stream');
+    if (result.mode === 'file') {
+      ctx.set('content-type', 'application/octet-stream');
+    }
     if (typeof result.file === 'string') {
+      if (result.mode === 'play') {
+        ctx.set('content-type', mime.contentType(path.extname(result.file)) || 'application/octet-stream');
+        ctx.set('access-control-allow-origin', '*');
+        ctx.set('timing-allow-origin', '*');
+      }
       ctx.body = fs.createReadStream(result.file);
     } else if (result.file instanceof fs.ReadStream) {
       ctx.body = result.file;
@@ -21,12 +30,14 @@ module.exports = {
    * get file result
    *
    * @param  {String||fs.ReadStream} file - file name or stream
+   * @param  {String} mode - file | play
    * @return {Object} file result
    */
-  order: (file) => {
+  order: (file, mode = 'file') => {
     return {
       type: 'file',
-      file
+      file,
+      mode
     };
   }
 };
