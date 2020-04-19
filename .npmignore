@@ -2,6 +2,7 @@ tmp
 npm-debug.log
 coverage
 lcov.info
+.travis.yml
 .nyc_output
 .vscode
 
@@ -12,3 +13,4 @@ lcov.info
 bin
 test
 example
+start.js

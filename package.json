@@ -1,6 +1,6 @@
 {
   "name": "@epiijs/server",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "epii server",
   "engines": {
     "node": ">=8.0.0"
@@ -33,7 +33,7 @@
     "@eggjs/router": "^2.0.0",
     "@epiijs/html5": "^0.5.1",
     "koa": "^2.11.0",
-    "koa-body": "^4.1.1",
+    "koa-bodyparser": "^4.3.0",
     "koa-compose": "^4.1.0",
     "koa-send": "^5.0.0",
     "lodash": "^4.17.15",

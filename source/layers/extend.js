@@ -1,6 +1,5 @@
 /* eslint-disable global-require */
 
-const path = require('path');
 const assist = require('../kernel/assist');
 const logger = require('../kernel/logger');
 
@@ -57,12 +56,8 @@ module.exports = async function extendLayer(app) {
   });
 
   // support body parser
-  app.use(require('koa-body')({
-    multipart: true,
-    formidable: {
-      uploadDir: path.join(config.path.root, config.path.upload)
-    }
-  }));
+  // use body by ctx.request.body
+  app.use(require('koa-bodyparser')({ strict: false }));
 
   // todo - support plugin
   // todo - support inject for service

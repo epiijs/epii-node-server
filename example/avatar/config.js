@@ -9,8 +9,7 @@ module.exports = {
     },
     client: 'client',
     layout: 'layout',
-    static: 'static',
-    upload: 'upload'
+    static: 'static'
   },
   prefix: {
     static: '__file'

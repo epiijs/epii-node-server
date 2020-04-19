@@ -19,5 +19,13 @@ module.exports = [
         body: 'should reset, maybo todo boom'
       })
     }
+  },
+
+  {
+    path: '/debug/post-body',
+    verb: 'post',
+    body: async function () {
+      return this.epii.json(this.request.body);
+    }
   }
 ];

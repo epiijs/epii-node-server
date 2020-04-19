@@ -5,7 +5,7 @@ module.exports = async function staticLayer(app) {
   const config = app.epii.config;
 
   app.use(async (ctx, next) => {
-    let prefix = config.prefix.static;
+    let prefix = config.prefix.static || '/__file';
     const staticDir = path.join(config.path.root, config.path.static);
 
     // fix prefix for path

@@ -12,8 +12,7 @@ var epiiServer = require('../vm')([
       },
       client: 'client',
       layout: 'layout',
-      static: 'static',
-      upload: 'upload'
+      static: 'static'
     },
     prefix: {
       static: '__static'

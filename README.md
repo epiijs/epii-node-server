@@ -5,11 +5,9 @@
 
 A koa-based server with preset MVC model.
 
-**Please upgrade to v3+ for node 8 !!!**
-
 - @eggjs/router for controller
 - koa-send for static files
-- koa-body for body parse & file upload
+- koa-bodyparser for body parse ~~& file upload~~
 - epii-html5 for main document
 - access to .well-known
 
@@ -139,7 +137,7 @@ epiiServer([{
     client: 'client',
     layout: 'layout',
     static: 'static',
-    upload: 'upload',
+    /* will NEVER support upload */
   },
   prefix: {
     static: '__file',
