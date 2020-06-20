@@ -46,40 +46,12 @@ async function applyLayers(app) {
 }
 
 /**
- * compose server with plugins
- *
- * @param  {Server} server
- * @param  {Object} plugins - { name : handler }
- * @return {Function} http.Server callback
- */
-function composePlugins(server, plugins) {
-  // skip null plugin
-  if (!plugins) return server;
-
-  const regexp = new RegExp('^/_epii_([a-z]+)_/');
-  return (request, response) => {
-    const match = request.url.match(regexp);
-    if (match) {
-      const plugin = plugins[match[0]];
-      if (plugin) {
-        request.url = request.url.replace(regexp, '');
-        plugin(request, response);
-        return;
-      }
-      logger.warn('nothing for plugin-liked request');
-    }
-    server(request, response);
-  };
-}
-
-/**
  * create server handler
  *
  * @param  {Object} config - app config
- * @param  {Object} plugin - { [name]: [handler] }
  * @return {Function} http.Server callback
  */
-async function createServer(config, plugin) {
+async function createServer(config) {
   // verify config
   const conf = verifyConfig(config);
 
@@ -104,9 +76,7 @@ async function createServer(config, plugin) {
     logger.halt('server error', error.message);
     logger.halt(error.stack);
   });
-
-  // try to compose core with plugins
-  return composePlugins(app.callback(), plugin);
+  return app.callback();
 }
 
 module.exports = {

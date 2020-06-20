@@ -8,10 +8,9 @@ const packageJSON = require('../package.json');
  * start server
  *
  * @param  {Object} config - config for apps
- * @param  {Object} plugin - { [name]: [handler] }
  * @return {Object[]} http.Server instances
  */
-function startServer(config, plugin) {
+function startServer(config) {
   const configs = assist.arrayify(config);
   const version = packageJSON.version;
   logger.info(`epii server version: ${version}`);
@@ -21,7 +20,7 @@ function startServer(config, plugin) {
 
   return configs.map(async (c) => {
     // create server handler
-    const handler = await server.createServer(c, plugin);
+    const handler = await server.createServer(c);
 
     // start server
     const httpServer = http
