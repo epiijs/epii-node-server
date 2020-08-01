@@ -1,6 +1,6 @@
 {
   "name": "@epiijs/server",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "epii server",
   "engines": {
     "node": ">=8.0.0"
@@ -32,23 +32,23 @@
   "dependencies": {
     "@eggjs/router": "^2.0.0",
     "@epiijs/html5": "^0.5.2",
-    "koa": "^2.12.1",
+    "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
     "koa-compose": "^4.1.0",
-    "koa-send": "^5.0.0",
-    "lodash": "^4.17.15",
+    "koa-send": "^5.0.1",
+    "lodash": "^4.17.19",
     "mime-types": "^2.1.27"
   },
   "optionalDependencies": {
     "chalk": "^1.1.3"
   },
   "devDependencies": {
-    "chokidar": "^3.4.0",
+    "chokidar": "^3.4.1",
     "coveralls": "^3.1.0",
-    "eslint": "^7.3.0",
+    "eslint": "^7.6.0",
     "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.21.2",
-    "mocha": "^8.0.1",
+    "eslint-plugin-import": "^2.22.0",
+    "mocha": "^8.1.0",
     "node-fetch": "^2.6.0",
     "nyc": "^15.1.0"
   }
