@@ -7,10 +7,13 @@ lcov.info
 .vscode
 
 .eslintignore
-.eslintrc
+.eslintrc.json
 .gitignore
 
 bin
 test
 example
+
 start.js
+CONTRIBUTING.md
+ROADMAP.md
