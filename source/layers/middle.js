@@ -1,8 +1,7 @@
-const fs = require('fs');
 const path = require('path');
 const compose = require('koa-compose');
-const logger = require('../kernel/logger');
 const loader = require('../kernel/loader');
+const logger = require('../kernel/logger');
 
 function lintOrder(order) {
   if (!Array.isArray(order)) {
@@ -15,7 +14,7 @@ function lintOrder(order) {
 module.exports = async function middleLayer(app) {
   const config = app.epii.config;
   const middleDir = path.join(config.path.root, config.path.server.middleware);
-  const middleFiles = fs.readdirSync(middleDir).filter(e => !e.startsWith('$'));
+  const middleFiles = (await loader.getSubFiles(middleDir)).filter(e => !e.startsWith('$'));
   const middleItems = {
     $order: lintOrder(loader.loadFile(path.join(middleDir, '$order.js')))
   };

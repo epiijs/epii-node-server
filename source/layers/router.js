@@ -56,7 +56,7 @@ function lintResult(result) {
 module.exports = async function routerLayer(app) {
   const config = app.epii.config;
   const routerDir = path.join(config.path.root, config.path.server.controller);
-  const routerFiles = fs.readdirSync(routerDir);
+  const routerFiles = await loader.getSubFiles(routerDir);
   const router = new Router();
   const renderDir = path.join(__dirname, 'render');
   const renderFiles = fs.readdirSync(renderDir);

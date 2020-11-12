@@ -1,10 +1,30 @@
 /* eslint-disable global-require */
 
+const fs = require('fs');
 const path = require('path');
 const assist = require('./assist');
 const logger = require('./logger');
 
 const watchers = {};
+
+/**
+ * get sub files of directory
+ *
+ * @param {String} dir
+ * @return {Promise<String[]>} files
+ */
+function getSubFiles(dir) {
+  return new Promise((resolve) => {
+    fs.readdir(dir, (error, files) => {
+      if (error) {
+        console.error(error);
+        resolve([]);
+      } else {
+        resolve(files);
+      }
+    });
+  });
+}
 
 /**
  * load module from file
@@ -60,5 +80,6 @@ function autoLoadDir(name, dir, callback) {
 
 module.exports = {
   loadFile,
-  autoLoadDir
+  autoLoadDir,
+  getSubFiles
 };

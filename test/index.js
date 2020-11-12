@@ -1,3 +1,3 @@
-require('./start.js');
+require('./server.js');
 require('./ActionResult.js');
 require('./ActionManyVerbs.js');

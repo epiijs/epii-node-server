@@ -1,6 +1,6 @@
 {
   "name": "@epiijs/server",
-  "version": "0.10.3",
+  "version": "0.11.0",
   "description": "epii server",
   "engines": {
     "node": ">=8.0.0"
@@ -45,10 +45,10 @@
   "devDependencies": {
     "chokidar": "^3.4.3",
     "coveralls": "^3.1.0",
-    "eslint": "^7.12.1",
-    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint": "^7.13.0",
+    "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
-    "mocha": "^8.2.0",
+    "mocha": "^8.2.1",
     "node-fetch": "^2.6.1",
     "nyc": "^15.1.0"
   }

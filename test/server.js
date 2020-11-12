@@ -1,6 +1,6 @@
 const path = require('path')
 
-var epiiServer = require('../vm')([
+require('../source')([
   {
     name: 'EPII-Test',
     port: 8080,
