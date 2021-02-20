@@ -1,6 +1,14 @@
 const fs = require('fs');
 const path = require('path');
-const mime = require('mime-types');
+const mime = require('mime');
+
+function getContentType(file) {
+  let type = mime.getType(path.extname(file)) || 'application/octet-stream';
+  if (type === 'text/plain') {
+    type += '; charset=utf-8';
+  }
+  return type;
+}
 
 module.exports = {
   /**
@@ -14,7 +22,7 @@ module.exports = {
     }
     if (typeof result.file === 'string') {
       if (result.mode === 'play') {
-        ctx.set('content-type', mime.contentType(path.extname(result.file)) || 'application/octet-stream');
+        ctx.set('content-type', getContentType(result.file));
         ctx.set('access-control-allow-origin', '*');
         ctx.set('timing-allow-origin', '*');
       }

@@ -14,9 +14,21 @@ const logger = require('./logger');
  */
 function verifyConfig(config) {
   if (!config) throw new Error('config required');
-  const result = { ...config };
-  if (!result.name) result.name = 'unknown';
-  return result;
+  const c = { ...config };
+  // set default name
+  if (!c.name) c.name = 'unknown';
+  // fix static
+  if (!c.static) c.static = {};
+  if (!c.static.prefix) c.static.prefix = '/__file';
+  // fix static prefix
+  if (c.prefix && c.prefix.static) {
+    c.static.prefix = c.prefix.static;
+    logger.halt('use [static.prefix] instead of [prefix.static]');
+  }
+  if (c.static.prefix && !c.static.prefix.startsWith('/')) {
+    c.static.prefix = '/' + c.static.prefix;
+  }
+  return config;
 }
 
 /**

@@ -2,6 +2,7 @@ const http = require('http');
 const assist = require('./kernel/assist.js');
 const logger = require('./kernel/logger.js');
 const server = require('./kernel/server.js');
+const renders = require('./render.js');
 const packageJSON = require('../package.json');
 
 /**
@@ -39,4 +40,12 @@ function startServer(config) {
   });
 }
 
-module.exports = startServer;
+const ordersOfRender = {};
+Object.keys(renders).forEach(key => {
+  ordersOfRender[key] = renders[key].order;
+});
+
+module.exports = {
+  startServer,
+  renders: ordersOfRender,
+};

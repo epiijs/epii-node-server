@@ -1,10 +1,10 @@
-const fs = require('fs');
 const path = require('path');
 const lodash = require('lodash');
 const Router = require('@eggjs/router');
 const assist = require('../kernel/assist');
 const loader = require('../kernel/loader');
 const logger = require('../kernel/logger');
+const renders = require('../render');
 
 const verbs = [
   'HEAD', 'OPTIONS', 'PATCH',
@@ -58,9 +58,6 @@ module.exports = async function routerLayer(app) {
   const routerDir = path.join(config.path.root, config.path.server.controller);
   const routerFiles = await loader.getSubFiles(routerDir);
   const router = new Router();
-  const renderDir = path.join(__dirname, 'render');
-  const renderFiles = fs.readdirSync(renderDir);
-  const renders = {};
 
   function renderAction(action) {
     return async (ctx, next) => {
@@ -112,14 +109,9 @@ module.exports = async function routerLayer(app) {
     });
   }
 
-  // load renders
-  renderFiles.forEach(file => {
-    const fullPath = path.join(renderDir, file);
-    const render = loader.loadFile(fullPath);
-    const name = path.basename(file).slice(0, -3);
-    renders[name] = render;
-    // attach renders to app.epii and auto map to ctx.epii
-    assist.internal(app.epii, name, render.order);
+  // attach renders to app.epii and auto map to ctx.epii
+  Object.keys(renders).forEach(key => {
+    assist.internal(app.epii, key, renders[key].order);
   });
 
   // load routers

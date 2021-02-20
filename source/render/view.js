@@ -31,27 +31,31 @@ module.exports = {
     const config = app.epii.config;
 
     // get or init view cache
-    if (!app.epii.metaPack) {
-      app.epii.metaPack = new HTML5.MetaPack(
+    let viewPack = app.epii.viewPack;
+    if (!viewPack) {
+      viewPack = new HTML5.ViewPack(
         resolve.bind(null, config),
+      );
+      viewPack.useLoader(
+        HTML5.FileLoader,
         {
-          prefix: config.prefix.static,
+          prefix: config.static.prefix,
           source: path.join(config.path.root, config.path.static)
         }
       );
+      app.epii.viewPack = viewPack;
     }
-    const metaPack = app.epii.metaPack;
 
     // lazy load client meta
     const viewName = result.name || result.route.path;
-    let viewMeta = metaPack.getViewMeta(viewName);
+    let viewMeta = viewPack.getViewMeta(viewName);
     if (!viewMeta || app.env === 'development') {
       const viewPath = path.join(viewName, 'index.meta.js');
-      viewMeta = metaPack.loadViewMeta(viewPath);
+      viewMeta = viewPack.loadViewMeta(viewPath);
     }
 
-    // mount view with state
-    await viewMeta.mount(result.model);
+    // mount view with model
+    await viewMeta.mount(viewPack.loaders, result.model);
 
     // render view into html
     ctx.body = HTML5.renderToString(viewMeta);

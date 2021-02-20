@@ -3,16 +3,10 @@ const send = require('koa-send');
 
 module.exports = async function staticLayer(app) {
   const config = app.epii.config;
+  const staticDir = path.join(config.path.root, config.path.static);
+  const staticPrefix = config.static.prefix;
 
   app.use(async (ctx, next) => {
-    let prefix = config.prefix.static || '/__file';
-    const staticDir = path.join(config.path.root, config.path.static);
-
-    // fix prefix for path
-    if (!prefix.startsWith('/')) {
-      prefix = '/' + prefix;
-    }
-
     // send .well-known
     if (ctx.path.startsWith('/.well-known/')) {
       if (!config.expert['well-known']) {
@@ -25,8 +19,8 @@ module.exports = async function staticLayer(app) {
     }
 
     // use koa-send
-    if (ctx.path.startsWith(prefix)) {
-      const name = ctx.path.slice(prefix.length);
+    if (ctx.path.startsWith(staticPrefix)) {
+      const name = ctx.path.slice(staticPrefix.length);
       await send(ctx, name, { root: staticDir });
       return;
     }

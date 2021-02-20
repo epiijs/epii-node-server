@@ -1,6 +1,7 @@
-const path = require('path')
+const path = require('path');
+const { startServer } = require('../source');
 
-require('../source')([
+startServer([
   {
     name: 'EPII-Test',
     port: 8080,
@@ -14,11 +15,11 @@ require('../source')([
       layout: 'layout',
       static: 'static'
     },
-    prefix: {
-      static: '__static'
+    static: {
+      prefix: '__static',
     },
     expert: {
       'well-known': true
     }
   }
-])
+]);

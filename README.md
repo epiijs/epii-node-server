@@ -27,6 +27,8 @@ A koa-based server with preset MVC model.
 Different ActionResult makes different response.  
 
 ```js
+const { renders } = require('@epiijs/server');
+
 // controller
 module.exports = [
   {
@@ -34,19 +36,19 @@ module.exports = [
     verb: 'get',
     body: async function () {
       // response text/plain
-      return this.epii.text('text output');
+      return renders.text('text output');
 
       // response application/json
-      return this.epii.json({ state: true });
+      return renders.json({ state: true });
 
       // response text/html by ViewRender
-      return this.epii.view({ name: 'Li Lei' });
+      return renders.view({ name: 'Li Lei' });
 
       // response application/octet-stream
-      return this.epii.file('dataset.csv');
+      return renders.file('dataset.csv');
 
       // response redirect
-      return this.epii.jump('/target');
+      return renders.jump('/target');
     }
   }
 ];
@@ -139,8 +141,8 @@ epiiServer([{
     static: 'static',
     /* will NEVER support upload */
   },
-  prefix: {
-    static: '__file',
+  static: {
+    prefix: '__file',
   },
   expert: {
     'well-known': true, // default false
@@ -173,9 +175,7 @@ Use certbot and it will try to validate domain by nginx conf.
 
 ## FAQ
 
-### How to contributing
-
-TODO
+### How to contributing (TODO)
 
 ### How to serve static files
 

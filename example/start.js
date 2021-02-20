@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 
-const epii = require('../source');
+const { startServer } = require('../source');
 
-epii([
+startServer([
   require('./avatar/config')
 ]);

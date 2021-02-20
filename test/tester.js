@@ -40,11 +40,11 @@ function test(title, ctor) {
       if (output.head != null) {
         Object.keys(output.head).every(key => {
           var value = output.head[key]
-          assert.equal(response.headers.get(key), value, 'unexpected head')
+          assert.strictEqual(response.headers.get(key), value, 'unexpected head')
         })
       }
       if (output.code != null) {
-        assert.equal(response.status, output.code, 'unexpected code')
+        assert.strictEqual(response.status, output.code, 'unexpected code')
       }
       if (output.mime != null) {
         console.log(response.headers.get('content-type'))
@@ -52,7 +52,7 @@ function test(title, ctor) {
       }
       if (output.file != null && output.hash != null) {
         getMD5(output.file, function (hash) {
-          assert.equal(hash, output.hash, 'unexpected hash')
+          assert.strictEqual(hash, output.hash, 'unexpected hash')
         })
         throw new Error('skip other')
       }
@@ -61,22 +61,22 @@ function test(title, ctor) {
     .then(function (text) {
       if (text instanceof Error) return
       if (output.text != null) {
-        assert.equal(text.trim(), output.text.trim(), 'unexpected text')
+        assert.strictEqual(text.trim(), output.text.trim(), 'unexpected text')
       }
       if (output.file != null) {
         var content = fs.readFileSync(output.file, 'utf-8')
-        assert.equal(text.trim(), content.trim(), 'unexpected file')
+        assert.strictEqual(text.trim(), content.trim(), 'unexpected file')
       }
       if (output.json != null) {
         var json = JSON.parse(text)
         if (typeof output.json === 'object') {
-          assert.equal(
+          assert.strictEqual(
             JSON.stringify(json),
             JSON.stringify(output.json).trim(),
             'unexpected json'
           )
         } else {
-          assert.equal(json.state, output.json, 'unexpected json')
+          assert.strictEqual(json.state, output.json, 'unexpected json')
         }
       }
       done()

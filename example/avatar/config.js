@@ -11,8 +11,8 @@ module.exports = {
     layout: 'layout',
     static: 'static'
   },
-  prefix: {
-    static: '__file'
+  static: {
+    prefix: '__file',
   },
   expert: {
     'well-known': true
