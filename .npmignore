@@ -9,11 +9,9 @@ lcov.info
 .eslintignore
 .eslintrc.json
 .gitignore
+.travis.yml
 
-bin
-test
 example
-
-start.js
+test
 CONTRIBUTING.md
 ROADMAP.md
