@@ -54,7 +54,7 @@ module.exports = [
 ];
 ```
 
-### Simple app shell definition
+### simple app shell definition
 
 ```js
 // client/index.meta.js
@@ -72,7 +72,7 @@ module.exports = {
 // layout/simple.meta.js
 module.exports = {
   head: {
-    title: 'EPII Avatar',
+    title: 'epii server',
     metas: [],
     styles: 'reset.css',
     icon: 'epii-icon.png'
@@ -125,9 +125,9 @@ npm install --save @epiijs/server@latest
 
 ### use API to start server
 ```js
-const epiiServer = require('@epiijs/server');
+const { startServer } = require('@epiijs/server');
 
-epiiServer([{
+startServer({
   name: 'YOUR-APP-NAME',
   port: 8080,
   path: {
@@ -147,7 +147,7 @@ epiiServer([{
   expert: {
     'well-known': true, // default false
   }
-}]);
+});
 ```
 
 ### host server by nginx + certbot

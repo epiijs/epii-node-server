@@ -1,9 +1,11 @@
+const { renders } = require('../../../../source');
+
 module.exports = [
   {
     path: '/debug/1-path-n-verbs-1-body/:id?',
     verb: ['get', 'post', 'put', 'delete'],
     body: async function () {
-      return this.epii.json({
+      return renders.json({
         type: '1-path, n-verbs, 1-body',
         body: this.method
       })
@@ -14,7 +16,7 @@ module.exports = [
     path: '/debug/1-path-n-verbs-1-body/:id?',
     verb: 'get',
     body: async function () {
-      return this.epii.json({
+      return renders.json({
         type: '1-path, n-verbs, reset-body',
         body: 'should reset, maybo todo boom'
       })
@@ -25,7 +27,7 @@ module.exports = [
     path: '/debug/post-body',
     verb: 'post',
     body: async function () {
-      return this.epii.json(this.request.body);
+      return renders.json(this.request.body);
     }
   }
 ];

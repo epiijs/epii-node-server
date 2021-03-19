@@ -12,15 +12,13 @@ function isDebug() {
  * @param  {Object} target
  * @param  {String} key
  * @param  {*=} value
- * @param  {Object=} options
  */
-function internal(target, key, value, options) {
+function internal(target, key, value) {
   if (!target) return;
   Object.defineProperty(target, key, {
     value,
     writable: false,
     configurable: false,
-    enumerable: (options && options.enumerable) || true
   });
 }
 

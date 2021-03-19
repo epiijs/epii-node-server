@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'EPII-Avatar',
+  name: 'epii-server',
   port: 8080,
   path: {
     root: __dirname,

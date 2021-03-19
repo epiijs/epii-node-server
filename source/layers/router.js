@@ -109,11 +109,6 @@ module.exports = async function routerLayer(app) {
     });
   }
 
-  // attach renders to app.epii and auto map to ctx.epii
-  Object.keys(renders).forEach(key => {
-    assist.internal(app.epii, key, renders[key].order);
-  });
-
   // load routers
   routerFiles.forEach(file => {
     const fullPath = path.join(routerDir, file);

@@ -2,9 +2,9 @@
 
 const path = require('path');
 const Koa = require('koa');
-const assist = require('./assist');
-const loader = require('./loader');
-const logger = require('./logger');
+const assist = require('./kernel/assist');
+const loader = require('./kernel/loader');
+const logger = require('./kernel/logger');
 
 /**
  * verify and fixup config
@@ -47,7 +47,7 @@ async function applyLayers(app) {
   ];
   for (let i = 0; i < orders.length; i += 1) {
     const order = orders[i];
-    const layerPath = path.join(__dirname, '../layers', order + '.js');
+    const layerPath = path.join(__dirname, 'layers', order + '.js');
     const layerItem = loader.loadFile(layerPath);
     if (layerItem) {
       await layerItem(app);
@@ -72,7 +72,7 @@ async function createServer(config) {
 
   // create epii instance
   const globalEPII = {};
-  assist.internal(globalEPII, 'config', conf, { enumerable: false });
+  assist.internal(globalEPII, 'config', conf);
   assist.internal(app, 'epii', globalEPII);
   app.use(async (ctx, next) => {
     const sessionEPII = {};
@@ -92,5 +92,5 @@ async function createServer(config) {
 }
 
 module.exports = {
-  createServer
+  createServer,
 };

@@ -2,6 +2,4 @@
 
 const { startServer } = require('../source');
 
-startServer([
-  require('./avatar/config')
-]);
+startServer(require('./avatar/config'));
