@@ -6,7 +6,7 @@ try {
   console.error('chalk not installed');
 }
 
-const LOGO = chalk ? 'EPII Server' : '[EPII] Server';
+const LOGO = chalk ? 'epii server' : '[epii] server';
 const TYPE = {
   info: 'blue',
   warn: 'yellow',
