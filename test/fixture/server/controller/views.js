@@ -1,12 +1,10 @@
-const { renders } = require('../../../../source');
-
 module.exports = [
   {
     path: '/debug/null',
     verb: 'get',
-    body: async function () {
-      if (this.query.body) {
-        this.body = 'null result with body';
+    body: async ({ context }) => {
+      if (context.query.body) {
+        context.body = 'null result with body';
       }
     }
   },
@@ -14,7 +12,7 @@ module.exports = [
   {
     path: '/debug/text',
     verb: 'get',
-    body: async function () {
+    body: async ({ renders }) => {
       return renders.text('hello world');
     }
   },
@@ -22,7 +20,7 @@ module.exports = [
   {
     path: '/debug/json',
     verb: 'get',
-    body: async function () {
+    body: async ({ renders }) => {
       return renders.json({ 'hello': 'world' });
     }
   },
@@ -30,7 +28,7 @@ module.exports = [
   {
     path: '/debug/jump',
     verb: 'get',
-    body: async function () {
+    body: async ({ renders }) => {
       return renders.jump('/debug/text');
     }
   },
@@ -38,7 +36,7 @@ module.exports = [
   {
     path: '/debug/jump-non-http',
     verb: 'get',
-    body: async function () {
+    body: async ({ renders }) => {
       return renders.jump('/debug/text', 'html')
     }
   },
@@ -46,7 +44,7 @@ module.exports = [
   {
     path: '/debug/file',
     verb: 'get',
-    body: async function () {
+    body: async ({ renders }) => {
       const path = require('path');
       return renders.file(path.join(__dirname, '../../bucket/a.txt'));
     }
@@ -55,7 +53,7 @@ module.exports = [
   {
     path: '/debug/file-play',
     verb: 'get',
-    body: async function () {
+    body: async ({ renders }) => {
       const path = require('path');
       return renders.file(path.join(__dirname, '../../bucket/a.txt'), 'play');
     }
@@ -64,7 +62,7 @@ module.exports = [
   {
     path: '/debug/view/null',
     verb: 'get',
-    body: async function () {
+    body: async ({ renders }) => {
       return renders.view();
     }
   },
@@ -72,7 +70,7 @@ module.exports = [
   {
     path: '/debug/view/done',
     verb: 'get',
-    body: async function () {
+    body: async ({ renders }) => {
       return renders.view('/debug/view1');
     }
   }

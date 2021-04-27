@@ -1,13 +1,11 @@
-const { renders } = require('../../../../source');
-
 module.exports = [
   {
     path: '/debug/1-path-n-verbs-1-body/:id?',
     verb: ['get', 'post', 'put', 'delete'],
-    body: async function () {
+    body: async ({ context, renders }) => {
       return renders.json({
         type: '1-path, n-verbs, 1-body',
-        body: this.method
+        body: context.method
       })
     }
   },
@@ -15,7 +13,7 @@ module.exports = [
   {
     path: '/debug/1-path-n-verbs-1-body/:id?',
     verb: 'get',
-    body: async function () {
+    body: async ({ renders }) => {
       return renders.json({
         type: '1-path, n-verbs, reset-body',
         body: 'should reset, maybo todo boom'
@@ -26,8 +24,8 @@ module.exports = [
   {
     path: '/debug/post-body',
     verb: 'post',
-    body: async function () {
-      return renders.json(this.request.body);
+    body: async ({ context, renders }) => {
+      return renders.json(context.request.body);
     }
   }
 ];

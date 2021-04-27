@@ -6,7 +6,7 @@ const HTML5 = require('@epiijs/html5');
  *
  * @param  {Object} conf - app config
  * @param  {String} name - meta file name
- * @return {ViewMeta} view
+ * @return {String} full meta file path
  */
 function resolve(conf, name) {
   // client view meta
@@ -27,11 +27,11 @@ module.exports = {
    */
   solve: async (ctx, result) => {
     // get app config
-    const app = ctx.app;
-    const config = app.epii.config;
+    const container = ctx.app.epii;
+    const config = container.service('config');
 
     // get or init view cache
-    let viewPack = app.epii.viewPack;
+    let viewPack = container.service('layout');
     if (!viewPack) {
       viewPack = new HTML5.ViewPack(
         resolve.bind(null, config),
@@ -43,13 +43,13 @@ module.exports = {
           source: path.join(config.path.root, config.path.static)
         }
       );
-      app.epii.viewPack = viewPack;
+      container.provide('layout', viewPack);
     }
 
     // lazy load client meta
     const viewName = result.name || result.route.path;
     let viewMeta = viewPack.getViewMeta(viewName);
-    if (!viewMeta || app.env === 'development') {
+    if (!viewMeta || ctx.app.env === 'development') {
       const viewPath = path.join(viewName, 'index.meta.js');
       viewMeta = viewPack.loadViewMeta(viewPath);
     }

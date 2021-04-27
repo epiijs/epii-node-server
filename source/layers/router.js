@@ -6,10 +6,7 @@ const loader = require('../kernel/loader');
 const logger = require('../kernel/logger');
 const renders = require('../render');
 
-const verbs = [
-  'HEAD', 'OPTIONS', 'PATCH',
-  'POST', 'GET', 'PUT', 'DELETE'
-];
+const verbs = ['HEAD', 'OPTIONS', 'PATCH', 'POST', 'GET', 'PUT', 'DELETE'];
 
 /**
  * lint action
@@ -54,14 +51,19 @@ function lintResult(result) {
 }
 
 module.exports = async function routerLayer(app) {
-  const config = app.epii.config;
+  const container = app.epii;
+  const config = container.service('config');
+
+  const router = new Router();
   const routerDir = path.join(config.path.root, config.path.server.controller);
   const routerFiles = await loader.getSubFiles(routerDir);
-  const router = new Router();
 
-  function renderAction(action) {
+  function getActionCall(action) {
     return async (ctx, next) => {
-      const result = lintResult(await action.body.call(ctx));
+      // call action
+      const sessionContainer = ctx.epii;
+      const result = lintResult(await action.body.call(ctx, sessionContainer.service()));
+
       // render for not-found
       if (!result) {
         if (!ctx.body) {
@@ -74,20 +76,19 @@ module.exports = async function routerLayer(app) {
 
       // render for action result
       result.route = { verb: action.verb, path: action.path };
-      const render = renders[result.type];
       try {
-        await render.solve(ctx, result);
+        await renders[result.type].solve(ctx, result);
       } catch (error) {
         ctx.status = 500;
         ctx.body = error.stack;
       }
-      ctx.epii.cache('action', result);
+
       await next();
     };
   }
 
-  function loadAction(e, o) {
-    assist.arrayify(o).map(lintAction).filter(Boolean).forEach(action => {
+  function loadAction(error, o) {
+    assist.arrayify(o).map(lintAction).filter(Boolean).forEach((action) => {
       // reload action
       action.verbs.forEach((verb) => {
         const change = router.stack.findIndex(layer => {
@@ -98,12 +99,11 @@ module.exports = async function routerLayer(app) {
           logger.info('reload action', verb, action.path);
         }
 
-        // route action
-        // call router.[verb]
+        // call router[verb] to bind action
         router[verb.toLowerCase()].call(
           router,
           action.path,
-          renderAction(action)
+          getActionCall(action),
         );
       });
     });
@@ -119,4 +119,11 @@ module.exports = async function routerLayer(app) {
   // use router
   app.use(router.routes());
   app.use(router.allowedMethods());
+
+  // inject renders
+  const renderOrders = {};
+  Object.keys(renders).forEach((key) => {
+    renderOrders[key] = renders[key].order;
+  });
+  container.provide('renders', renderOrders);
 };

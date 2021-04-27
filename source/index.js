@@ -1,13 +1,7 @@
 const http = require('http');
 const logger = require('./kernel/logger.js');
 const { createServer } = require('./server.js');
-const renders = require('./render.js');
 const packageJSON = require('../package.json');
-
-const ordersOfRender = {};
-Object.keys(renders).forEach(key => {
-  ordersOfRender[key] = renders[key].order;
-});
 
 /**
  * start server
@@ -34,6 +28,5 @@ async function startServer(config) {
 }
 
 module.exports = {
-  renders: ordersOfRender,
   startServer,
 };

@@ -2,7 +2,9 @@ const path = require('path');
 const send = require('koa-send');
 
 module.exports = async function staticLayer(app) {
-  const config = app.epii.config;
+  const container = app.epii;
+  const config = container.service('config');
+
   const staticDir = path.join(config.path.root, config.path.static);
   const staticPrefix = config.static.prefix;
 

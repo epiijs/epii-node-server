@@ -12,7 +12,9 @@ function lintOrder(order) {
 }
 
 module.exports = async function middleLayer(app) {
-  const config = app.epii.config;
+  const container = app.epii;
+  const config = container.service('config');
+
   const middleDir = path.join(config.path.root, config.path.server.middleware);
   const middleFiles = (await loader.getSubFiles(middleDir)).filter(e => !e.startsWith('$'));
   const middleItems = {
@@ -21,7 +23,7 @@ module.exports = async function middleLayer(app) {
 
   function composeMiddle() {
     const series = [];
-    middleItems.$order.forEach(name => {
+    middleItems.$order.forEach((name) => {
       const item = middleItems[name];
       if (item) {
         if (Array.isArray(item)) {
@@ -41,7 +43,7 @@ module.exports = async function middleLayer(app) {
     }
   }
 
-  function loadMiddle(e, o, file) {
+  function loadMiddle(error, o, file) {
     const name = path.basename(file).slice(0, -3);
     if (name === '$order') {
       middleItems.$order = lintOrder(o);
@@ -54,7 +56,7 @@ module.exports = async function middleLayer(app) {
     }
   }
 
-  middleFiles.forEach(file => {
+  middleFiles.forEach((file) => {
     const fullPath = path.join(middleDir, file);
     loader.loadFile(fullPath, loadMiddle);
   });
@@ -62,6 +64,8 @@ module.exports = async function middleLayer(app) {
   loader.autoLoadDir('middleware', middleDir, loadMiddle);
 
   app.use(async (ctx, next) => {
-    await middleItems.$mixed.call(null, ctx, next);
+    // use IoC container instead of ctx
+    const sessionContainer = ctx.epii;
+    await middleItems.$mixed.call(null, sessionContainer.service(), next);
   });
 };

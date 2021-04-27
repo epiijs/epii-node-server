@@ -3,6 +3,7 @@
 const path = require('path');
 const Koa = require('koa');
 const assist = require('./kernel/assist');
+const inject = require('./kernel/inject');
 const loader = require('./kernel/loader');
 const logger = require('./kernel/logger');
 
@@ -13,7 +14,6 @@ const logger = require('./kernel/logger');
  * @return {Object} linted config
  */
 function verifyConfig(config) {
-  if (!config) throw new Error('config required');
   const c = { ...config };
   // set default name
   if (!c.name) c.name = 'unknown';
@@ -28,7 +28,8 @@ function verifyConfig(config) {
   if (c.static.prefix && !c.static.prefix.startsWith('/')) {
     c.static.prefix = '/' + c.static.prefix;
   }
-  return config;
+  if (!c.expert) c.expert = {};
+  return c;
 }
 
 /**
@@ -39,7 +40,7 @@ function verifyConfig(config) {
  */
 async function applyLayers(app) {
   const orders = [
-    'extend', // initial basic ability and extend aspect
+    'launch', // initial basic ability and extend aspect
     'static', // perform static output
     'middle', // proceed custom middlewares
     'router', // proceed custom controllers
@@ -48,9 +49,9 @@ async function applyLayers(app) {
   for (let i = 0; i < orders.length; i += 1) {
     const order = orders[i];
     const layerPath = path.join(__dirname, 'layers', order + '.js');
-    const layerItem = loader.loadFile(layerPath);
-    if (layerItem) {
-      await layerItem(app);
+    const layerBind = loader.loadFile(layerPath);
+    if (layerBind) {
+      await layerBind(app);
     } else {
       logger.halt('failed to load layer', order);
     }
@@ -64,30 +65,23 @@ async function applyLayers(app) {
  * @return {Function} http.Server callback
  */
 async function createServer(config) {
-  // verify config
-  const conf = verifyConfig(config);
-
   // create koa instance
+  if (!config) throw new Error('config required');
   const app = new Koa();
-
-  // create epii instance
-  const globalEPII = {};
-  assist.internal(globalEPII, 'config', conf);
-  assist.internal(app, 'epii', globalEPII);
-  app.use(async (ctx, next) => {
-    const sessionEPII = {};
-    assist.internal(ctx, 'epii', sessionEPII);
-    await next();
-  });
-
-  // apply recipes
-  await applyLayers(app);
-
-  // bind event
   app.on('error', (error) => {
     logger.halt('server error', error.message);
     logger.halt(error.stack);
   });
+
+  // create epii runtime
+  const container = new inject.Container();
+  const conf = verifyConfig(config);
+  container.provide('inject', container);
+  container.provide('config', conf);
+  container.require(conf.path.service);
+  assist.internal(app, 'epii', container);
+  await applyLayers(app);
+
   return app.callback();
 }
 

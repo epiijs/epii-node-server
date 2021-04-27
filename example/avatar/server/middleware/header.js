@@ -1,4 +1,4 @@
-module.exports = async function (ctx, next) {
-  console.log('header', ctx.path, ctx.get('user-agent'))
-  await next()
+module.exports = async ({ context }, next) => {
+  console.log('header', context.path, context.get('user-agent'));
+  await next();
 }

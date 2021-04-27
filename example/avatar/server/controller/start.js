@@ -1,10 +1,8 @@
-const { renders } = require('../../../../source');
-
 module.exports = [
   {
     path: '/',
     verb: 'get',
-    body: async function () {
+    body: async ({ renders }) => {
       return renders.view();
     }
   },
@@ -12,7 +10,7 @@ module.exports = [
   {
     path: '/jump',
     verb: 'get',
-    body: async function () {
+    body: async ({ renders }) => {
       return renders.jump('/', 'html');
     }
   }

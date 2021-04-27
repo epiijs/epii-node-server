@@ -15,6 +15,7 @@ module.exports = {
     prefix: '__file',
   },
   expert: {
-    'well-known': true
+    'well-known': true,
+    'inject-koa': false,
   }
 }
