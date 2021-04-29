@@ -14,7 +14,7 @@ function concatPath(root, name) {
 class Container {
   constructor() {
     this.ancestor = null;
-    this.services = {}; // { key: { prototype, ...options } }
+    this.services = {}; // { key: { service, ...options } }
     this.requires = [];
     this.destruct = [];
     this.entrance = null;
@@ -63,7 +63,7 @@ class Container {
     // 1. get service directly
     if (name in this.services) {
       const dep = this.services[name];
-      if (dep.evaluable && typeof dep.provider === 'function') {
+      if (dep.evaluable && typeof dep.service === 'function') {
         return dep.service(this.service());
       }
       return dep.service;
