@@ -84,7 +84,7 @@ class Container {
 
     // 4. load external service
     for (let i = 0; i < this.requires.length; i += 1) {
-      const depPath = concatPath(this.requires[i]);
+      const depPath = concatPath(this.requires[i], name + '.js');
       if (!depPath) continue;
       const dep = loader.loadFile(depPath);
       if (dep != null) {

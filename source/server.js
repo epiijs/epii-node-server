@@ -78,7 +78,7 @@ async function createServer(config) {
   const conf = verifyConfig(config);
   container.provide('inject', container);
   container.provide('config', conf);
-  container.require(conf.path.service);
+  container.require(path.join(conf.path.root, conf.path.server.service));
   assist.internal(app, 'epii', container);
   await applyLayers(app);
 
