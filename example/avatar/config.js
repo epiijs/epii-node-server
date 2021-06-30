@@ -5,7 +5,8 @@ module.exports = {
     root: __dirname,
     server: {
       controller: 'server/controller',
-      middleware: 'server/middleware'
+      middleware: 'server/middleware',
+      service: 'server/service',
     },
     client: 'client',
     layout: 'layout',

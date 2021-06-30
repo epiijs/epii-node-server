@@ -1,6 +1,10 @@
 const path = require('path');
 const HTML5 = require('@epiijs/html5');
 
+const context = {
+  layout: null,
+};
+
 /**
  * resolve meta path
  *
@@ -31,7 +35,7 @@ module.exports = {
     const config = container.service('config');
 
     // get or init view cache
-    let viewPack = container.service('layout');
+    let viewPack = context.layout;
     if (!viewPack) {
       viewPack = new HTML5.ViewPack(
         resolve.bind(null, config),
@@ -43,6 +47,7 @@ module.exports = {
           source: path.join(config.path.root, config.path.static)
         }
       );
+      context.layout = viewPack;
       container.provide('layout', viewPack);
     }
 

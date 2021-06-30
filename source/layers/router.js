@@ -6,7 +6,7 @@ const loader = require('../kernel/loader');
 const logger = require('../kernel/logger');
 const renders = require('../render');
 
-const verbs = ['HEAD', 'OPTIONS', 'PATCH', 'POST', 'GET', 'PUT', 'DELETE'];
+const VERBS = ['HEAD', 'OPTIONS', 'PATCH', 'POST', 'GET', 'PUT', 'DELETE'];
 
 /**
  * lint action
@@ -20,7 +20,7 @@ function lintAction(action) {
     assist.arrayify(action.verb || action.method || action.verbs || action.methods)
       .filter(e => typeof e === 'string')
       .map(e => e.toUpperCase())
-      .filter(e => verbs.indexOf(e) >= 0)
+      .filter(e => VERBS.indexOf(e) >= 0)
   );
   // use 'GET' verb by default
   if (routeVerbs.length === 0) {

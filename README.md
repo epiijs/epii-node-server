@@ -7,9 +7,10 @@ A koa-based server with preset MVC model.
 
 - @eggjs/router for controller
 - koa-send for static files
+- access to .well-known
 - koa-bodyparser for body parse ~~& file upload~~
 - epii-html5 for main document
-- access to .well-known
+- service container (new)
 
 ## Features
 
@@ -22,19 +23,29 @@ A koa-based server with preset MVC model.
         => / Render (Model) => (View) /
     (Response)
 
+    &
+
+    / Service / everywhere
+
 ### ASP.net-liked
 
 Different ActionResult makes different response.  
 
 ```js
-const { renders } = require('@epiijs/server');
+// service/service1.js
+module.exports = async ({ context }) => {
+  // anything you want to provide
+  return {
+    example: () => {}
+  };
+}
 
 // controller
 module.exports = [
   {
     path: '/',
     verb: 'get',
-    body: async function () {
+    body: async function ({ renders, service1 }) {
       // response text/plain
       return renders.text('text output');
 
@@ -49,6 +60,9 @@ module.exports = [
 
       // response redirect
       return renders.jump('/target');
+
+      // use service
+      return renders.json(service1.example());
     }
   }
 ];
@@ -108,6 +122,7 @@ See also [`epii-html5`](https://github.com/epiijs/epii-html5).
 │   └── ViewB
 │       └── index.meta.js
 ├── server
+│   ├── service
 │   ├── middleware
 │   │   └── $order.js
 │   └── controller
@@ -135,6 +150,7 @@ startServer({
     server: {
       controller: 'server/controller',
       middleware: 'server/middleware',
+      service: 'server/service',
     },
     client: 'client',
     layout: 'layout',
