@@ -3,7 +3,7 @@ import lodash from 'lodash';
 import loader from '../kernel/loader';
 import logger from '../kernel/logger';
 import Router from '../kernel/router';
-import renders from '../render';
+import renders from '../renders';
 import { IApp, IConfig } from '../kernel/define';
 
 const router = new Router();

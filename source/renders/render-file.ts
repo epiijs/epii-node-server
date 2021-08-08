@@ -12,12 +12,12 @@ function getContentType(file) {
   return type;
 }
 
-interface IFileActionResult extends IActionResult {
+export interface IFileActionResult extends IActionResult {
   mode: 'file' | 'play';
   file: string | ReadStream;
 }
 
-export async function renderFile(ctx: Context, result: IFileActionResult) {
+export default async (ctx: Context, result: IFileActionResult) => {
   if (result.mode === 'file') {
     ctx.set('content-type', 'application/octet-stream');
   }
@@ -48,8 +48,4 @@ export function orderActionResult(file, mode = 'file') {
     file,
     mode
   };
-}
-
-export default {
-  
 }

@@ -1,10 +1,10 @@
 import path from 'path';
 import Koa from 'koa';
 
+import { IApp, IConfig } from './kernel/define';
 import Container from './kernel/inject';
 import logger from './kernel/logger';
 import layers from './layers';
-import { IApp, IConfig } from './kernel/define';
 
 /**
  * normalize config
