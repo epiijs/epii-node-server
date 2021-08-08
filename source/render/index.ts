@@ -1,5 +1,3 @@
-/* eslint-disable global-require */
-
 import FileRender from './render-file';
 import JsonRender from './render-json';
 import JumpRender from './render-jump';

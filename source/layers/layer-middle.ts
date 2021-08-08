@@ -46,7 +46,7 @@ function reloadMiddle(file: string, module: any) {
   }
 }
 
-module.exports = async function middleLayer(app: IApp) {
+export default async function middleLayer(app: IApp) {
   const container = app.epii;
   const config = container.service('config') as IConfig;
 

@@ -30,4 +30,4 @@ export interface IActionResult {}
 
 export type MiddleFn = (service: any, next: Koa.Next) => any;
 
-export type ActionFn = (service: any) => Promise<IActionResult>;
+export type ActionFn = (service: any) => Promise<IActionResult | null>;

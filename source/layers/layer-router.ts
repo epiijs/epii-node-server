@@ -79,7 +79,7 @@ function getActionCall(action) {
   };
 }
 
-function loadAction(error, o) {
+function loadAction(error: Error, module: any) {
   assist.arrayify(o).map(lintAction).filter(Boolean).forEach((action) => {
     // reload action
     action.verbs.forEach((verb) => {
@@ -96,7 +96,7 @@ function loadAction(error, o) {
   });
 }
 
-module.exports = async function routerLayer(app: IApp) {
+export default async function routerLayer(app: IApp) {
   const container = app.epii;
   const config = container.service('config') as IConfig;
 

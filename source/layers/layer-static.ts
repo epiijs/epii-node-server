@@ -2,7 +2,7 @@ import path from 'path';
 import send from 'koa-send';
 import { IApp, IConfig } from '../kernel/define';
 
-module.exports = async function staticLayer(app: IApp) {
+export default async function staticLayer(app: IApp) {
   const container = app.epii;
   const config = container.service('config') as IConfig;
 
