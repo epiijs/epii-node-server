@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
 
-const { startServer } = require('../source');
+const { startServer } = require('../target');
 
 startServer(require('./avatar/config'));

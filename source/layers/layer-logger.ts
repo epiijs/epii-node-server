@@ -1,8 +1,9 @@
-const logger = require('../kernel/logger');
+import { IApp, IConfig } from '../kernel/define';
+import logger from '../kernel/logger';
 
-module.exports = async function loggerLayer(app) {
+export default async function loggerLayer(app: IApp) {
   const container = app.epii;
-  const config = container.service('config');
+  const config = container.service('config') as IConfig;
 
   const globalPerfs = {
     requestCount: 0

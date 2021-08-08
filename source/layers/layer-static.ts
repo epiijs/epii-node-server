@@ -1,9 +1,10 @@
-const path = require('path');
-const send = require('koa-send');
+import path from 'path';
+import send from 'koa-send';
+import { IApp, IConfig } from '../kernel/define';
 
-module.exports = async function staticLayer(app) {
+module.exports = async function staticLayer(app: IApp) {
   const container = app.epii;
-  const config = container.service('config');
+  const config = container.service('config') as IConfig;
 
   const staticDir = path.join(config.path.root, config.path.static);
   const staticPrefix = config.static.prefix;

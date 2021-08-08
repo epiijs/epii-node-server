@@ -1,5 +1,5 @@
 const path = require('path');
-const { startServer } = require('../source');
+const { startServer } = require('../target');
 
 startServer({
   name: 'EPII-Test',
