@@ -100,11 +100,11 @@ export default async function routerLayer(app: IApp) {
   const container = app.epii;
   const config = container.service('config') as IConfig;
 
-  const renderOrders = {};
+  const renderBuilders = {};
   Object.keys(renders).forEach((key) => {
-    renderOrders[key] = renders[key].order;
+    renderBuilders[key] = renders[key].order;
   });
-  container.provide('renders', renderOrders);
+  container.provide('renders', renderBuilders);
 
   const routerDir = path.join(config.path.root, config.path.server.controller);
   const routerFiles = await loader.getSubFiles(routerDir);
