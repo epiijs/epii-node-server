@@ -1,5 +1,6 @@
 import Koa from 'koa';
 import { IContainer } from './inject';
+import { HTTPMethods } from './router';
 
 export interface IConfig {
   name: string;
@@ -31,3 +32,9 @@ export interface IActionResult {}
 export type MiddleFn = (service: any, next: Koa.Next) => any;
 
 export type ActionFn = (service: any) => Promise<IActionResult | null>;
+
+export interface IAction {
+  path: string,
+  verb: HTTPMethods | HTTPMethods[],
+  body: ActionFn,
+}

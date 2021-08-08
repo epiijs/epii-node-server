@@ -25,7 +25,7 @@ export function buildActionResult(file: string | ReadStream, mode = 'file'): IFi
   };
 }
 
-export default async function renderActionResult(ctx: Context, result: IFileActionResult) {
+export default async function renderActionResult(ctx: Context, result: IFileActionResult): void {
   if (result.mode === 'file') {
     ctx.set('content-type', 'application/octet-stream');
   }

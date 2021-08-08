@@ -4,7 +4,10 @@ import loader from '../kernel/loader';
 import logger from '../kernel/logger';
 import Router from '../kernel/router';
 import renders from '../renders';
-import { IApp, IConfig } from '../kernel/define';
+import { IAction, IActionResult, IApp, IConfig } from '../kernel/define';
+import { Context, Next } from 'koa';
+
+type RenderFn = (ctx: Context, result: IActionResult) => void;
 
 const router = new Router();
 
@@ -50,11 +53,11 @@ function lintResult(result) {
   return result;
 }
 
-function getActionCall(action) {
-  return async (ctx, next) => {
-    // call action
+function getActionCall(action: IAction) {
+  return async (ctx: Context, next: Next) => {
     const sessionContainer = ctx.epii;
-    const result = lintResult(await action.body.call(ctx, sessionContainer.service()));
+    const result = lintResult(await action.body.call(ctx, sessionContainer.service())) as IActionResult;
+    result.route = { verb: action.verb, path: action.path };
 
     // render for not-found
     if (!result) {
@@ -66,10 +69,9 @@ function getActionCall(action) {
       return;
     }
 
-    // render for action result
-    result.route = { verb: action.verb, path: action.path };
+    const renderActionResult = renders[result.type] as RenderFn;
     try {
-      await renders[result.type].solve(ctx, result);
+      await renderActionResult(ctx, result);
     } catch (error) {
       ctx.status = 500;
       ctx.body = error.stack;
@@ -115,5 +117,5 @@ export default async function routerLayer(app: IApp) {
   });
   loader.autoLoadDir('controller', routerDir, loadAction);
 
-  app.use(router.routes());
+  app.use(router.handler());
 };

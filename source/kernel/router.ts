@@ -1,7 +1,7 @@
 import { Context, Next } from 'koa';
 import { ActionFn } from './define';
 
-type HTTPMethods = 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'GET' | 'PUT' | 'DELETE';
+export type HTTPMethods = 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'GET' | 'PUT' | 'DELETE';
 
 interface IRouteTable {
 }
@@ -24,7 +24,7 @@ export default class Router implements IRouter {
     
   }
 
-  service() {
+  handler() {
     //  app.use(router.allowedMethods());
     return (ctx: Context, next: Next) => {
 
