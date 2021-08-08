@@ -34,14 +34,7 @@ function composeMiddles() {
       }
     }
   });
-  if (series.length === 0) {
-    middleCache.mixed = async (ctx, next) => {
-      logger.warn('middleware not found');
-      await next();
-    };
-  } else {
-    middleCache.mixed = compose(series);
-  }
+  middleCache.mixed = series.length > 0 ? compose(series) : null;
 }
 
 function reloadMiddle(file: string, module: any) {
@@ -77,8 +70,8 @@ module.exports = async function middleLayer(app: IApp) {
   });
 
   app.use(async (ctx, next) => {
-    const sessionContainer = ctx.epii;
     if (middleCache.mixed) {
+      const sessionContainer = ctx.epii;
       await middleCache.mixed.call(null, sessionContainer.service(), next);
     } else {
       await next();

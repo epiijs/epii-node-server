@@ -26,9 +26,8 @@ export interface IApp extends Koa {
   epii: IContainer;
 }
 
-export interface IActionResult {
-}
+export interface IActionResult {}
 
 export type MiddleFn = (service: any, next: Koa.Next) => any;
 
-export type ActionFn = (service: any) => IActionResult;
+export type ActionFn = (service: any) => Promise<IActionResult>;

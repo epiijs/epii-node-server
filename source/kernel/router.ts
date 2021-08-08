@@ -1,15 +1,17 @@
 import { Context, Next } from 'koa';
 import { ActionFn } from './define';
 
-const VERBS = ['HEAD', 'OPTIONS', 'PATCH', 'POST', 'GET', 'PUT', 'DELETE'];
+type HTTPMethods = 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'GET' | 'PUT' | 'DELETE';
 
 interface IRouteTable {
 }
 
 interface IRouter {
-  provide: (path: string, method: string[], action: ActionFn) => void;
+  refresh: (path: string, method: string[], action: ActionFn) => void;
+  
 }
 
+// TODO - 注册路由、检索路由
 export default class Router implements IRouter {
   routes: IRouteTable;
 
@@ -17,7 +19,7 @@ export default class Router implements IRouter {
     this.routes = [];
   }
 
-  provide(path: string, method: string[], action: ActionFn) {
+  refresh(path: string, method: string[], action: ActionFn) {
     const pathParts = path.split('/');
     
   }

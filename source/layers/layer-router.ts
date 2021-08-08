@@ -115,5 +115,5 @@ module.exports = async function routerLayer(app: IApp) {
   });
   loader.autoLoadDir('controller', routerDir, loadAction);
 
-  app.use(router.service());
+  app.use(router.routes());
 };

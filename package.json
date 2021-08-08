@@ -31,7 +31,6 @@
   },
   "homepage": "https://github.com/epiijs/epii-server#readme",
   "dependencies": {
-    "@eggjs/router": "^2.0.0",
     "@epiijs/html5": "^1.0.0",
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.3.0",
