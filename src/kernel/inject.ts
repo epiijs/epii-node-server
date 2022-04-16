@@ -2,7 +2,7 @@ import path from 'path';
 import loader from './loader';
 import logger from './logger';
 
-type HandleResolve = string | ((name: string) => string);
+type TResolve = string | ((name: string) => string);
 
 interface IServiceOptions {
   writable?: boolean;
@@ -14,39 +14,45 @@ interface IService extends IServiceOptions {
 }
 
 export interface IContainer {
-  provide: (name: string, service: any, options: any) => void;
-  resolve: (name: HandleResolve) => void;
+  provide: (name: string, service: any, options: IServiceOptions) => void;
+  resolve: (name: TResolve) => void;
   inherit: () => IContainer;
-  service: (name?: string) => any;
+  service: (name?: string) => unknown;
   dispose: () => void;
 }
 
-function concatPath(root: HandleResolve, name: string) {
+function concatPath(root: TResolve, name: string) {
   if (typeof root === 'function') {
     return root(name);
   }
   return path.join(root, name);
 }
 
-export default class Container implements IContainer {
+export class Container implements IContainer {
   ancestor: IContainer | null;
   services: {
     [key in string]: IService;
   };
-  resolves: HandleResolve[];
+  resolves: TResolve[];
   entrance: any;
 
   constructor() {
     this.ancestor = null;
     this.services = {};
     this.resolves = [];
-    this.entrance = null;
+    this.entrance = new Proxy({}, {
+      get: (target, property) => {
+        if (typeof property === 'string') {
+          this.service.call(this, property);
+        }
+      },
+    });
   }
 
   provide(name: string, service: any, options: IServiceOptions = {}) {
-    if (!name || !service) return;
+    if (!name || !service) { return; }
     const dep = this.services[name];
-    if (dep && !dep.writable) return;
+    if (dep && !dep.writable) { return; }
     this.services[name] = {
       service,
       writable: options.writable != null ? options.writable : true,
@@ -54,8 +60,8 @@ export default class Container implements IContainer {
     };
   }
 
-  resolve(name: HandleResolve) {
-    if (!name) return;
+  resolve(name: TResolve) {
+    if (!name) { return; }
     if (this.resolves.indexOf(name) < 0) {
       this.resolves.push(name);
     }
@@ -68,21 +74,12 @@ export default class Container implements IContainer {
   }
 
   service(name?: string): any {
-    // 0. proxy service(name)
+    // 0. get service proxy
     if (!name) {
-      if (!this.entrance) {
-        this.entrance = new Proxy({}, {
-          get: (target, property) => {
-            if (typeof property === 'string') {
-              this.service.call(this, property);
-            }
-          },
-        });
-      }
       return this.entrance;
     }
 
-    // 1. get service directly
+    // 1. find service directly
     if (name in this.services) {
       const dep = this.services[name];
       if (dep.callable && typeof dep.service === 'function') {
@@ -91,7 +88,7 @@ export default class Container implements IContainer {
       return dep.service;
     }
 
-    // 2. get service of ancestor
+    // 2. find service from ancestor
     if (this.ancestor) {
       return this.ancestor.service(name);
     }
@@ -99,7 +96,7 @@ export default class Container implements IContainer {
     // 3. load external service
     for (let i = 0; i < this.resolves.length; i += 1) {
       const file = concatPath(this.resolves[i], name + '.js');
-      if (!file) continue;
+      if (!file) { continue; }
       const dep = loader.loadModule(file);
       if (dep != null) {
         this.provide(name, dep);

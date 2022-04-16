@@ -2,6 +2,7 @@ import LaunchLayer from './layer-launch';
 import LoggerLayer from './layer-logger';
 import MiddleLayer from './layer-middle';
 import RouterLayer from './layer-router';
+import RenderLayer from './layer-render';
 import StaticLayer from './layer-static';
 
 export default {

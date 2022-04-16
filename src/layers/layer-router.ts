@@ -1,15 +1,19 @@
 import path from 'path';
+
+import { Context, Next } from 'koa';
 import lodash from 'lodash';
+
 import loader from '../kernel/loader';
 import logger from '../kernel/logger';
-import Router from '../kernel/router';
+import { ActionFn, Router } from '../kernel/router';
 import renders from '../renders';
-import { IAction, IActionResult, IApp, IConfig } from '../kernel/define';
-import { Context, Next } from 'koa';
+import { IApp, IServerOptions } from '../types';
 
 type RenderFn = (ctx: Context, result: IActionResult) => void;
 
-const router = new Router();
+function arrayify(o: any): any[] {
+  return Array.isArray(o) ? o : [o];
+}
 
 /**
  * lint action
@@ -20,7 +24,7 @@ function lintAction(action) {
   // normalize action verb
   // support 'verb' & 'method' & 'verbs' & 'methods'
   let routeVerbs = lodash.uniq(
-    assist.arrayify(action.verb || action.method || action.verbs || action.methods)
+    arrayify(action.verb || action.method || action.verbs || action.methods)
       .filter(e => typeof e === 'string')
       .map(e => e.toUpperCase())
       .filter(e => VERBS.indexOf(e) >= 0)
@@ -81,41 +85,47 @@ function getActionCall(action: IAction) {
   };
 }
 
-function loadAction(error: Error, module: any) {
-  assist.arrayify(o).map(lintAction).filter(Boolean).forEach((action) => {
-    // reload action
-    action.verbs.forEach((verb) => {
-      const change = router.stack.findIndex(layer => {
-        return layer.path === action.path && layer.methods.indexOf(verb) >= 0;
-      });
-      if (change >= 0) {
-        router.stack.splice(change, 1);
-        logger.info('reload action', verb, action.path);
-      }
-
-      router.provide(action.path, verb.toLowerCase(), getActionCall(action));      
-    });
+function mountRoutes(router: Router, module: any): ActionFn[] {
+  const result: ActionFn[] = [];
+  const actions = arrayify(module);
+  actions.forEach(action => {
+    // .map(lintAction).filter(Boolean).forEach((action) => {
+    //   // reload action
+    //   action.verbs.forEach((verb) => {
+    //     const change = router.stack.findIndex(layer => {
+    //       return layer.path === action.path && layer.methods.indexOf(verb) >= 0;
+    //     });
+    //     if (change >= 0) {
+    //       router.stack.splice(change, 1);
+    //       logger.info('reload action', verb, action.path);
+    //     }
+  
+    //     router.provide(action.path, verb.toLowerCase(), getActionCall(action));      
+    //   });
+    // });
   });
+  return result;
 }
 
 export default async function routerLayer(app: IApp) {
   const container = app.epii;
-  const config = container.service('config') as IConfig;
+  const options = container.service('config') as IServerOptions;
 
-  const renderBuilders = {};
-  Object.keys(renders).forEach((key) => {
-    renderBuilders[key] = renders[key].order;
-  });
-  container.provide('renders', renderBuilders);
+  const router = new Router();
 
-  const routerDir = path.join(config.path.root, config.path.server.controller);
-  const routerFiles = await loader.getSubFiles(routerDir);
+  const routerDir = path.join(options.path.root, options.path.server.controller);
+  const routerFiles = await loader.getFilesInDir(routerDir);
 
   routerFiles.forEach(file => {
     const fullPath = path.join(routerDir, file);
-    loader.loadModule(fullPath, loadAction);
+    const module = loader.loadModule(fullPath);
+    mountRoutes(router, module);
   });
-  loader.autoLoadDir('controller', routerDir, loadAction);
+
+  loader.watchFilesInDir('controller', routerDir, (event, p) => {
+    const module = loader.loadModule(p);
+    mountRoutes(router, module);
+  });
 
   app.use(router.handler());
 };

@@ -1,48 +1,44 @@
 import path from 'path';
 import Koa from 'koa';
 
-import { IApp, IConfig } from './kernel/define';
-import Container from './kernel/inject';
+import { Container } from './kernel/inject';
 import logger from './kernel/logger';
 import layers from './layers';
+import { IApp, IServerOptions } from './types';
 
-/**
- * normalize config
- */
-function verifyConfig(c: any): IConfig {
-  const config: IConfig = {
-    name: c.name || 'unknown',
-    path: { ...c.path },
-    static: c.static ? {
-      prefix: c.static.prefix || (c.prefix && c.prefix.static) || '/__file',
-    } : {
-      prefix: '/__file',
+function checkOptions(options: any): IServerOptions {
+  const checkedResult: IServerOptions = {
+    name: options.name || 'unknown',
+    port: options.port || '8080',
+    path: { ...options.path },
+    static: {
+      prefix: '/__file'
     },
-    expert: { ...c.expert },
+    expert: { ...options.expert },
+  };
+  if (options?.static?.prefix) {
+    checkedResult.static.prefix = '/' + options.static.prefix;
   }
-  if (!config.static.prefix.startsWith('/')) {
-    config.static.prefix = '/' + config.static.prefix;
-  }
-  return config;
+  return checkedResult;
 }
 
 /**
  * create server handler
  */
-export async function createServer(config: IConfig) {
-  // create koa instance
-  const conf = verifyConfig(config);
+export async function createServer(options: IServerOptions) {
+  const checkedOptions = checkOptions(options);
+
   const app = new Koa() as IApp;
   app.on('error', (error) => {
-    logger.fail('server error', error.message);
-    logger.fail(error.stack);
+    logger.error('server error', error.message);
+    logger.error(error.stack);
   });
 
   // init epii runtime
   const container = new Container();
   container.provide('inject', container);
-  container.provide('config', conf);
-  container.resolve(path.join(conf.path.root, conf.path.server.service));
+  container.provide('config', checkedOptions);
+  container.resolve(path.join(checkedOptions.path.root, checkedOptions.path.server.service));
 
   // lock epii namespace
   Object.defineProperty(app, 'epii', {

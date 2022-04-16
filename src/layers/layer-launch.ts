@@ -1,4 +1,4 @@
-import { IApp } from '../kernel/define';
+import { IApp } from "../types";
 
 export default async function launchLayer(app: IApp) {
   const container = app.epii;
