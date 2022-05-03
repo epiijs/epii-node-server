@@ -1,14 +1,13 @@
-import LaunchLayer from './layer-launch';
-import LoggerLayer from './layer-logger';
-import MiddleLayer from './layer-middle';
-import RouterLayer from './layer-router';
-import RenderLayer from './layer-render';
-import StaticLayer from './layer-static';
+import launchLayer from './layer-launch';
+import loggerLayer from './layer-logger';
+import middleLayer from './layer-middle';
+import actionLayer from './layer-action';
+import staticLayer from './layer-static';
 
 export default {
-  launch: LaunchLayer,
-  logger: LoggerLayer,
-  middle: MiddleLayer,
-  router: RouterLayer,
-  static: StaticLayer,
+  launch: launchLayer,
+  logger: loggerLayer,
+  middle: middleLayer,
+  action: actionLayer,
+  static: staticLayer,
 };

@@ -1,32 +1,78 @@
-import path from 'path';
-import Koa from 'koa';
+import * as path from 'path';
+import * as Koa from 'koa';
 
-import { Container } from './kernel/inject';
+import { IInjector, Injector } from './kernel/inject';
 import logger from './kernel/logger';
 import layers from './layers';
-import { IApp, IServerOptions } from './types';
 
-function checkOptions(options: any): IServerOptions {
-  const checkedResult: IServerOptions = {
-    name: options.name || 'unknown',
-    port: options.port || '8080',
-    path: { ...options.path },
+export interface IApp extends Koa {
+  epii: IInjector;
+}
+
+export interface IServerConfig {
+  name: string;
+  port: number;
+
+  path: {
+    root: string;
+    static: string;
+    server: {
+      portal: string;
+      controller: string;
+      middleware: string;
+      service: string;
+    }
+  },
+
+  middle: {
+    order: string[];
+  },
+
+  static: {
+    prefix: string;
+  },
+
+  expert: {
+    'hot-reload': boolean;
+    'well-known': boolean;
+  }
+}
+
+function checkConfig(config: any): IServerConfig {
+  const result: IServerConfig = {
+    name: config.name || 'unknown',
+    port: config.port || '8080',
+    path: { ...config.path },
+    middle: {
+      order: []
+    },
     static: {
       prefix: '/__file'
     },
-    expert: { ...options.expert },
+    expert: {
+      'well-known': false,
+      'hot-reload': false,
+      ...config.expert
+    }
   };
-  if (options?.static?.prefix) {
-    checkedResult.static.prefix = '/' + options.static.prefix;
+  if (config?.middle?.order) {
+    if (config.middle.order.every((e: any) => typeof e === 'string')) {
+      result.middle.order = config.middle.order;
+    }
   }
-  return checkedResult;
+  if (config?.static?.prefix) {
+    if (typeof config.static.prefix === 'string') {
+      result.static.prefix = '/' + config.static.prefix;
+    }
+  }
+  return result;
 }
 
 /**
  * create server handler
  */
-export async function createServer(options: IServerOptions) {
-  const checkedOptions = checkOptions(options);
+export async function createServer(config: IServerConfig) {
+  const checkedConfig = checkConfig(config);
 
   const app = new Koa() as IApp;
   app.on('error', (error) => {
@@ -35,25 +81,25 @@ export async function createServer(options: IServerOptions) {
   });
 
   // init epii runtime
-  const container = new Container();
-  container.provide('inject', container);
-  container.provide('config', checkedOptions);
-  container.resolve(path.join(checkedOptions.path.root, checkedOptions.path.server.service));
+  const injector = new Injector();
+  injector.setService('inject', injector);
+  injector.setService('config', checkedConfig);
+  injector.setResolve(path.join(checkedConfig.path.root, checkedConfig.path.server.service));
 
-  // lock epii namespace
+  // bind readonly epii namespace
   Object.defineProperty(app, 'epii', {
-    value: container,
+    value: injector,
     enumerable: true,
     writable: false,
     configurable: false,
   });
 
   // init all layers
-  await layers.launch(app); // initial basic ability and extend aspect
-  await layers.static(app); // perform static output
+  await layers.launch(app); // init injector and parser
+  await layers.static(app); // respond with static files
   await layers.middle(app); // proceed custom middlewares
-  await layers.router(app); // proceed custom controllers
-  await layers.logger(app); // perform analysis and save logs
+  await layers.action(app); // proceed custom controllers
+  await layers.logger(app); // measure and log by loggers
 
   return app.callback();
 }

@@ -1,9 +1,9 @@
 import logger from '../kernel/logger';
-import { IApp, IServerOptions } from '../types';
+import { IApp, IServerConfig } from '../server';
 
 export default async function loggerLayer(app: IApp) {
-  const container = app.epii;
-  const options = container.service('config') as IServerOptions;
+  const injector = app.epii;
+  const config = injector.getService('config') as IServerConfig;
 
   const globalPerfs = {
     requestCount: 0
@@ -18,7 +18,7 @@ export default async function loggerLayer(app: IApp) {
     await next();
 
     sessionPerfs.elapse = Date.now() - sessionPerfs.launch;
-    logger.info(`[${options.name}] ${sessionPerfs.elapse}ms ${ctx.status} <${ctx.method}> ${ctx.path}`);
+    logger.info(`[${config.name}] ${sessionPerfs.elapse}ms ${ctx.status} <${ctx.method}> ${ctx.path}`);
 
     globalPerfs.requestCount += 1;
   });

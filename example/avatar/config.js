@@ -7,6 +7,7 @@ module.exports = {
       controller: 'server/controller',
       middleware: 'server/middleware',
       service: 'server/service',
+      portal: 'server/portal'
     },
     client: 'client',
     layout: 'layout',

@@ -7,7 +7,7 @@
   },
   "main": "build/index.js",
   "scripts": {
-    "start": "rollup -c && tsc example/start.ts && node example/start.ts",
+    "start": "rollup -c && tsc example/start.ts && node example/start.js",
     "build": "rollup -c",
     "lint": "eslint .",
     "test": "npm run build && eslint . && nyc --reporter=lcov mocha test/index.js --exit",
@@ -35,13 +35,14 @@
     "koa-compose": "^4.1.0",
     "koa-send": "^5.0.1",
     "lodash": "^4.17.21",
-    "mime": "^2.5.2"
+    "mime-types": "^2.1.35"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.3.2",
     "@tsconfig/node12": "^1.0.9",
     "@types/koa": "^2.13.4",
     "@types/lodash": "^4.14.172",
+    "@types/mime-types": "^2.1.1",
     "@types/node": "^17.0.24",
     "chokidar": "^3.5.2",
     "coveralls": "^3.1.1",

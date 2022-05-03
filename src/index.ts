@@ -1,22 +1,21 @@
-import http from 'http';
+import * as http from 'http';
 
 import logger from './kernel/logger';
-import { createServer } from './server';
-import { IServerOptions } from './types';
+import { createServer, IServerConfig } from './server';
 
-export async function startServer(options: IServerOptions) {
+export async function startServer(config: IServerConfig) {
   const packageJSON = require('../package.json');
 
   const version = packageJSON.version;
   logger.info(`epii server version ${version}`);
 
-  const handler = await createServer(options);
+  const handler = await createServer(config);
   const httpServer = http
     .createServer(handler)
-    .listen(options.port);
+    .listen(config.port);
 
-  logger.ready(`start server = ${options.name}`);
-  logger.ready(` |- port = ${options.port}`);
+  logger.ready(`start server = ${config.name}`);
+  logger.ready(` |- port = ${config.port}`);
 
   return httpServer;
 }

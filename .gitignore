@@ -1,7 +1,9 @@
 .DS_Store
-npm-debug.log
-node_modules
-target
-coverage
+tmp
+build
+
 .nyc_output
 .vscode
+coverage
+node_modules
+npm-debug.log

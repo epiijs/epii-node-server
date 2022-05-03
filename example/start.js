@@ -1,5 +1,5 @@
+"use strict";
 /* eslint-disable global-require */
-
-const { startServer } = require('../target');
-
-startServer(require('./avatar/config'));
+exports.__esModule = true;
+var build_1 = require("../build");
+(0, build_1.startServer)(require('./avatar/config'));

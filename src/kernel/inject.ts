@@ -1,6 +1,9 @@
-import path from 'path';
+import * as path from 'path';
+
 import loader from './loader';
 import logger from './logger';
+
+import { IDisposable } from '../types';
 
 type TResolve = string | ((name: string) => string);
 
@@ -9,98 +12,87 @@ interface IServiceOptions {
   callable?: boolean;
 }
 
-interface IService extends IServiceOptions {
-  service: any;
+interface IServiceWrapper extends IServiceOptions {
+  provider: any;
 }
 
-export interface IContainer {
-  provide: (name: string, service: any, options: IServiceOptions) => void;
-  resolve: (name: TResolve) => void;
-  inherit: () => IContainer;
-  service: (name?: string) => unknown;
-  dispose: () => void;
+export interface IServiceHandler {
+  [key: string]: unknown;
 }
 
-function concatPath(root: TResolve, name: string) {
-  if (typeof root === 'function') {
-    return root(name);
-  }
-  return path.join(root, name);
+export interface IInjector extends IDisposable {
+  setResolve: (name: TResolve) => void;
+  setInherit: (base: IInjector) => void;
+  setService: (name: string, service: any, options?: IServiceOptions) => void;
+  getService: (name: string) => unknown;
+  getHandler: () => IServiceHandler;
 }
 
-export class Container implements IContainer {
-  ancestor: IContainer | null;
+export class Injector implements IInjector {
   services: {
-    [key in string]: IService;
+    [key in string]: IServiceWrapper;
   };
   resolves: TResolve[];
-  entrance: any;
+  handler?: IServiceHandler;
+  inherit?: IInjector;
 
   constructor() {
-    this.ancestor = null;
     this.services = {};
     this.resolves = [];
-    this.entrance = new Proxy({}, {
-      get: (target, property) => {
-        if (typeof property === 'string') {
-          this.service.call(this, property);
-        }
-      },
-    });
+    this.inherit = undefined;
+    this.handler = undefined;
   }
 
-  provide(name: string, service: any, options: IServiceOptions = {}) {
+  setResolve(resolve: TResolve): void {
+    if (!resolve) { return; }
+    if (this.resolves.indexOf(resolve) < 0) {
+      this.resolves.push(resolve);
+    }
+  }
+
+  setInherit(inherit: IInjector): void {
+    this.inherit = inherit;
+  }
+
+  setService(name: string, service: any, options: IServiceOptions = {}): void {
     if (!name || !service) { return; }
-    const dep = this.services[name];
-    if (dep && !dep.writable) { return; }
+    const wrapper = this.services[name];
+    if (wrapper && !wrapper.writable) { return; }
     this.services[name] = {
-      service,
+      provider: service,
       writable: options.writable != null ? options.writable : true,
       callable: options.callable != null ? options.callable : true,
     };
   }
 
-  resolve(name: TResolve) {
-    if (!name) { return; }
-    if (this.resolves.indexOf(name) < 0) {
-      this.resolves.push(name);
-    }
-  }
-
-  inherit(): IContainer {
-    const container = new Container();
-    container.ancestor = this;
-    return container;
-  }
-
-  service(name?: string): any {
-    // 0. get service proxy
-    if (!name) {
-      return this.entrance;
-    }
-
+  getService(name: string): unknown {
     // 1. find service directly
     if (name in this.services) {
-      const dep = this.services[name];
-      if (dep.callable && typeof dep.service === 'function') {
-        return dep.service(this.service());
+      const wrapper = this.services[name];
+      if (wrapper.callable && typeof wrapper.provider === 'function') {
+        return wrapper.provider(this.handler);
       }
-      return dep.service;
+      return wrapper.provider;
     }
 
-    // 2. find service from ancestor
-    if (this.ancestor) {
-      return this.ancestor.service(name);
+    // 2. find service from parent injector
+    if (this.inherit) {
+      return this.inherit.getService(name);
     }
 
     // 3. load external service
-    for (let i = 0; i < this.resolves.length; i += 1) {
-      const file = concatPath(this.resolves[i], name + '.js');
-      if (!file) { continue; }
-      const dep = loader.loadModule(file);
-      if (dep != null) {
-        this.provide(name, dep);
-        return this.service(name);
+    if (this.resolves.length > 0) {
+      for (let i = 0; i < this.resolves.length; i += 1) {
+        const resolve = this.resolves[i];
+        const fullPath = typeof resolve === 'function'
+          ? resolve(name)
+          : path.join(resolve, name);
+        if (!fullPath) { continue; }
+        const service = loader.loadModule(fullPath);
+        if (service != null) {
+          this.setService(name, service);
+          return this.getService(name);
+        }
       }
     }
 
@@ -109,10 +101,23 @@ export class Container implements IContainer {
     return null;
   }
 
+  getHandler(): IServiceHandler {
+    if (!this.handler) {
+      this.handler = new Proxy({}, {
+        get: (target, property) => {
+          if (typeof property === 'string') {
+            return this.getService(property);
+          }
+        },
+      });
+    }
+    return this.handler;
+  }
+
   dispose() {
-    this.ancestor = null;
     this.services = {};
     this.resolves = [];
-    this.entrance = null;
+    this.inherit = undefined;
+    this.handler = undefined;
   }
 }
