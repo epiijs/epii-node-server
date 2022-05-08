@@ -1,16 +1,19 @@
 import * as path from 'path';
 
 import { Context } from 'koa';
+import { Document, ILoader, FileLoader, renderToString } from '@epiijs/portal';
 
-import HTML5 = require('@epiijs/html5');
-// TODO - change to use portal
-
-import { IActionResult, IRender } from '../kernel/render';
 import { IInjector } from '../kernel/inject';
+import { loadModule } from '../kernel/loader';
+import { IActionResult, IRender } from '../kernel/render';
 import { IServerConfig } from '../server';
 
-const CONTEXT = {
-  viewPack: null,
+const CONTEXT: {
+  portals: Record<string, Document>,
+  loaders: ILoader[]
+} = {
+  portals: {},
+  loaders: []
 };
 
 export interface IViewActionResult extends IActionResult {
@@ -24,43 +27,32 @@ const viewRender: IRender = {
   },
 
   outputActionResult: async (ctx: Context, result: IActionResult): Promise<void> => {
-    const { name, data } = result as IViewActionResult;
-
-    // get app config
     const sessionInjector = ctx.epii as IInjector;
     const config = sessionInjector.getService('config') as IServerConfig;
+    const hotReload = config.expert['hot-reload'];
 
-    const resolver = (name: string) => {
-      return path.join(config.path.root, config.path.server.portal, name);
-    };
-
-    // get or init view cache
-    let viewPack: any = CONTEXT.viewPack;
-    if (!viewPack) {
-      viewPack = new HTML5.ViewPack(resolver);
-      viewPack.useLoader(
-        HTML5.FileLoader,
-        {
-          prefix: config.static.prefix,
-          source: path.join(config.path.root, config.path.static)
-        }
-      );
-      CONTEXT.viewPack = viewPack;
+    if (CONTEXT.loaders.length === 0) {
+      CONTEXT.loaders.push(new FileLoader({
+        prefix: config.static.prefix,
+        source: path.join(config.path.root, config.path.static)
+      }));
     }
 
-    // lazy load client meta
-    let viewMeta = viewPack.getViewMeta(name);
-    if (!viewMeta || ctx.app.env === 'development') {
-      const viewPath = path.join(name, 'index.meta.js');
-      viewMeta = viewPack.loadViewMeta(viewPath);
+    const { name, data } = result as IViewActionResult;
+
+    if (!CONTEXT.portals[name] || hotReload) {
+      const file = path.join(config.path.root, config.path.server.document, `${name}.meta.js`);
+      const meta = loadModule(file);
+      CONTEXT.portals[name] = new Document(meta);
     }
 
-    // mount view with model
-    await viewMeta.mount(viewPack.loaders, data);
-
-    // render view into html
-    ctx.body = HTML5.renderToString(viewMeta);
-    ctx.set('content-type', 'text/html; charset=utf-8');
+    const portal = CONTEXT.portals[name];
+    if (portal) {
+      await portal.applyLoaders(CONTEXT.loaders);
+      const document = portal.getInjectCopy(data);
+      ctx.body = renderToString(document);
+      ctx.set('content-type', 'text/html; charset=utf-8');
+    }
   }
 }
 

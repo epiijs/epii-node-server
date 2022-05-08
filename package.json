@@ -28,8 +28,8 @@
   },
   "homepage": "https://github.com/epiijs/epii-server#readme",
   "dependencies": {
-    "@epiijs/html5": "^1.0.0",
     "@epiijs/logger": "^0.2.2",
+    "@epiijs/portal": "^0.1.0",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
     "koa-compose": "^4.1.0",

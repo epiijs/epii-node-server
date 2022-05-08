@@ -1,5 +1,4 @@
 import { createReadStream, ReadStream } from 'fs';
-import * as path from 'path';
 
 import { contentType } from 'mime-types';
 import { Context } from 'koa';

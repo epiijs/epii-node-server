@@ -3,7 +3,7 @@ import * as path from 'path';
 import logger from '../kernel/logger';
 import loader from '../kernel/loader';
 import { IInjector, IServiceHandler } from '../kernel/inject';
-import { IRouteRule, isRouteEqual, Router } from '../kernel/router';
+import { HTTPMethod, IRouteRule, isRouteEqual, Router } from '../kernel/router';
 import { IActionResult } from '../kernel/render';
 import { IApp, IServerConfig } from '../server';
 import renders from '../renders';
@@ -39,7 +39,7 @@ function checkAction(action: any): IAction {
   // if (!routePath || !routeBody) return null;
   const route: IRouteRule = {
     pattern: action.path,
-    methods: action.verb
+    methods: arrayify(action.verb).map((e: string) => e.toUpperCase() as HTTPMethod)
   };
   return {
     route,

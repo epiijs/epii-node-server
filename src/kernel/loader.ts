@@ -12,7 +12,7 @@ const CONTEXT: {
   watchers: []
 };
 
-function listFilesOfDir(dir: string): Promise<string[]> {
+export function listFilesOfDir(dir: string): Promise<string[]> {
   return new Promise((resolve) => {
     readdir(dir, (error, files) => {
       if (error) {
@@ -25,7 +25,7 @@ function listFilesOfDir(dir: string): Promise<string[]> {
   });
 }
 
-function watchTarget(target: string, callback: TryWatchFn): FSWatcher {
+export function watchTarget(target: string, callback: TryWatchFn): FSWatcher {
   const chokidar = require('chokidar');
   const watcher = chokidar
     .watch(target, {
@@ -42,7 +42,7 @@ function getWatchers(): FSWatcher[] {
   return CONTEXT.watchers;
 }
 
-function loadModule<T = unknown>(path: string, callback?: LoadModuleFn<T>): T | undefined {
+export function loadModule<T = unknown>(path: string, callback?: LoadModuleFn<T>): T | undefined {
   // verify *.js
   if (!/\.js$/.test(path)) {
     return undefined;

@@ -17,10 +17,10 @@ export interface IServerConfig {
     root: string;
     static: string;
     server: {
-      portal: string;
-      controller: string;
-      middleware: string;
       service: string;
+      middleware: string;
+      controller: string;
+      document: string;
     }
   },
 
@@ -74,7 +74,7 @@ function checkConfig(config: any): IServerConfig {
 export async function createServer(config: IServerConfig) {
   const checkedConfig = checkConfig(config);
 
-  const app = new Koa() as IApp;
+  const app: IApp = new Koa.default() as IApp;
   app.on('error', (error) => {
     logger.error('server error', error.message);
     logger.error(error.stack);

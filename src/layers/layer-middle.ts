@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import { Next } from 'koa';
-import compose = require('koa-compose');
+import compose from 'koa-compose';
 
 import logger from '../kernel/logger';
 import loader from '../kernel/loader';

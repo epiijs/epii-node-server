@@ -3,7 +3,7 @@ module.exports = [
     path: '/',
     verb: 'get',
     body: async ({ renders }) => {
-      return renders.view();
+      return renders.view('index');
     }
   },
 

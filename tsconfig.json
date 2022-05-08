@@ -4,7 +4,8 @@
     "preserveConstEnums": true,
     "outDir": "build",
     "declaration": true,
-    "esModuleInterop": false
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "**/*.spec.ts"]

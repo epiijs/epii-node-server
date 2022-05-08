@@ -3,14 +3,13 @@ module.exports = {
   port: 8080,
   path: {
     root: __dirname,
-    server: {
-      controller: 'server/controller',
-      middleware: 'server/middleware',
-      service: 'server/service',
-      portal: 'server/portal'
-    },
     client: 'client',
-    layout: 'layout',
+    server: {
+      service: 'server/service',
+      middleware: 'server/middleware',
+      controller: 'server/controller',
+      document: 'server/document',
+    },
     static: 'static'
   },
   static: {
