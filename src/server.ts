@@ -4,6 +4,7 @@ import * as Koa from 'koa';
 import { IInjector, Injector } from './kernel/inject';
 import logger from './kernel/logger';
 import layers from './layers';
+import { arrayify } from './types';
 
 export interface IApp extends Koa {
   epii: IInjector;
@@ -25,7 +26,7 @@ export interface IServerConfig {
   },
 
   middle: {
-    order: string[];
+    series: string[];
   },
 
   static: {
@@ -44,7 +45,7 @@ function checkConfig(config: any): IServerConfig {
     port: config.port || '8080',
     path: { ...config.path },
     middle: {
-      order: []
+      series: []
     },
     static: {
       prefix: '/__file'
@@ -55,9 +56,10 @@ function checkConfig(config: any): IServerConfig {
       ...config.expert
     }
   };
-  if (config?.middle?.order) {
-    if (config.middle.order.every((e: any) => typeof e === 'string')) {
-      result.middle.order = config.middle.order;
+  if (config?.middle?.series) {
+    const series = arrayify(config.middle.series);
+    if (series.every((e: any) => typeof e === 'string')) {
+      result.middle.series = series;
     }
   }
   if (config?.static?.prefix) {
@@ -74,6 +76,7 @@ function checkConfig(config: any): IServerConfig {
 export async function createServer(config: IServerConfig) {
   const checkedConfig = checkConfig(config);
 
+  // @ts-ignore
   const app: IApp = new Koa.default() as IApp;
   app.on('error', (error) => {
     logger.error('server error', error.message);
@@ -96,10 +99,10 @@ export async function createServer(config: IServerConfig) {
 
   // init all layers
   await layers.launch(app); // init injector and parser
+  await layers.logger(app); // measure and log by loggers
   await layers.static(app); // respond with static files
   await layers.middle(app); // proceed custom middlewares
   await layers.action(app); // proceed custom controllers
-  await layers.logger(app); // measure and log by loggers
 
   return app.callback();
 }

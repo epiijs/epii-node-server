@@ -53,24 +53,14 @@ class PathTree implements IPathTree {
     return '/' + names.join('/');
   }
 
-  appendNode(name: string, node: PathTree): void {
-    node.names = this.names.concat(name);
-    if (name === '*') {
-      this.nodes.forAny = node;
-    }
-    if (name.startsWith(':')) {
-      this.nodes.forVar[name] = node;
-    }
-    this.nodes.forOne[name] = node;
-  }
-
   searchNode(names: string[]): PathTree | null {
     const nextNames = names.slice(1);
     const nodeForOne = this.nodes.forOne[names[0]];
     if (nodeForOne) {
-      return nextNames.length > 0
-        ? nodeForOne.searchNode(nextNames)
-        : nodeForOne;
+      if (nextNames.length === 0) {
+        return nodeForOne;
+      }
+      return nodeForOne.searchNode(nextNames);
     }
     for (const nodeForVar of Object.values(this.nodes.forVar)) {
       if (nextNames.length === 0) {
@@ -85,8 +75,8 @@ class PathTree implements IPathTree {
     return nodeForAny || null;
   }
 
-  constructor() {
-    this.names = [];
+  constructor(names?: string[]) {
+    this.names = names || [];
     this.nodes = { forOne: {}, forVar: {}, forAny: null };
   }
 
@@ -94,9 +84,14 @@ class PathTree implements IPathTree {
     const names = this.splitPath(path);
     let cursor: PathTree = this;
     for (const name of names) {
-      const node = new PathTree();
-      cursor.appendNode(name, node);
-      cursor = node;
+      const newTree = new PathTree(cursor.names.concat(name));
+      if (name === '*') {
+        cursor = (cursor.nodes.forAny ??= newTree);
+      } else if (name.startsWith(':')) {
+        cursor = (cursor.nodes.forVar[name] ??= newTree);
+      } else {
+        cursor = (cursor.nodes.forOne[name] ??= newTree);
+      }
     }
     return cursor;
   }
@@ -107,9 +102,19 @@ class PathTree implements IPathTree {
   }
 
   fillParams(path: string): IPathParams {
-    const names = this.splitPath(path);
-    // TODO
-    return {};
+    const values = this.splitPath(path);
+    const params: IPathParams = {};
+    for (let i = 0; i < this.names.length; i += 1) {
+      const name = this.names[i];
+      if (name.startsWith(':')) {
+        params[name.slice(1)] = values[i];
+      }
+      if (name === '*') {
+        params['*'] = values.slice(i).join('/');
+        break;
+      }
+    }
+    return params;
   }
 
   // TODO - throttle minifyTree
@@ -162,7 +167,6 @@ export class Router implements IRouter {
     for (const method of methods) {
       value.methods[method] = extra;
     }
-    console.log({ methods, extra, value, node });
   }
 
   removeRule(rule: IRouteRule) {
@@ -181,7 +185,6 @@ export class Router implements IRouter {
 
   matchRoute(path: string, method: string): IRouteResult {
     const node = this.routes.searchTree(path);
-    console.log({ path, method, node });
     const result: IRouteResult = { params: {} };
     if (node) {
       const params = node.fillParams(path);

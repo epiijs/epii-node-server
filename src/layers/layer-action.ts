@@ -7,6 +7,7 @@ import { HTTPMethod, IRouteRule, isRouteEqual, Router } from '../kernel/router';
 import { IActionResult } from '../kernel/render';
 import { IApp, IServerConfig } from '../server';
 import renders from '../renders';
+import { arrayify } from '../types';
 
 export type ActionFn = (services: IServiceHandler) => Promise<IActionResult>;
 
@@ -15,14 +16,10 @@ export interface IAction {
   entry: ActionFn;
 }
 
-function arrayify(o: any): any[] {
-  return o ? (Array.isArray(o) ? o : [o]) : [];
-}
-
 function checkAction(action: any): IAction {
   // // normalize action verb
   // // support 'verb' & 'method' & 'verbs' & 'methods'
-  // let routeVerbs = lodash.uniq(
+  // let routeVerbs = uniq(
   //   arrayify(action.verb || action.method || action.verbs || action.methods)
   //     .filter(e => typeof e === 'string')
   //     .map(e => e.toUpperCase())
@@ -95,13 +92,17 @@ export default async function actionLayer(app: IApp) {
   app.use(async (ctx, next) => {
     const matchResult = router.matchRoute(ctx.path, ctx.method);
     if (matchResult.error) {
-      // TODO - handle error?
-      ctx.throw(matchResult.error);
+      // TODO - handle error
+      ctx.status = matchResult.error;
+      await next();
+      return;
     }
+
     const sessionInjector = ctx.epii as IInjector;
-    const entry = matchResult.extra as ActionFn;
-    const actionResult = await entry(sessionInjector.getHandler());
-    // TODO - catch and handle error?
+    sessionInjector.setService('params', matchResult.params);
+    const actionFn = matchResult.extra as ActionFn;
+    const actionResult = await actionFn(sessionInjector.getHandler());
+    // TODO - catch and handle error
     // TODO - check action result
 
     const resultRender = renders[actionResult.type];

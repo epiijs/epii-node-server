@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'epii-server',
+  name: 'example',
   port: 8080,
   path: {
     root: __dirname,
@@ -15,8 +15,10 @@ module.exports = {
   static: {
     prefix: '__file',
   },
+  middle: {
+    series: ['header']
+  },
   expert: {
-    'well-known': true,
-    'inject-koa': false,
+    'well-known': true
   }
 }

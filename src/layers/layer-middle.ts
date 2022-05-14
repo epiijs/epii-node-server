@@ -18,13 +18,11 @@ export default async function middleLayer(app: IApp) {
   const middleDir = path.join(config.path.root, config.path.server.middleware);
   const middleFiles = await loader.listFilesOfDir(middleDir);
   const middleCache: {
-    order: string[];
     items: { [key in string]: MiddleFn };
-    mixed?: MiddleFn;
+    entry?: MiddleFn;
   } = {
-    order: config.middle.order,
     items: {},
-    mixed: undefined
+    entry: undefined
   };
 
   function loadMiddleModule(p: string) {
@@ -37,32 +35,33 @@ export default async function middleLayer(app: IApp) {
     }
   }
 
-  function mixupMiddles() {
-    const series = middleCache.order
+  function composeMiddles(): MiddleFn | undefined {
+    const middles = config.middle.series
       .map(name => middleCache.items[name])
       .filter(Boolean); // null occurs when reloading
-    return series.length > 0 ? compose(series) : null;
+    console.log(config.middle, middles);
+    return middles.length > 0 ? compose(middles) : undefined;
   }
 
   middleFiles.forEach((file) => {
     const fullPath = path.join(middleDir, file);
     loadMiddleModule(fullPath);
   });
-  mixupMiddles.mixed = mixupMiddles();
+  middleCache.entry = composeMiddles();
 
   if (hotReload) {
     loader.watchTarget(middleDir, (event, fullPath) => {
       const file = path.relative(middleDir, fullPath);
       logger.warn(`[middleware] ${event} ${file}`);
       loadMiddleModule(fullPath);
-      mixupMiddles.mixed = mixupMiddles();
+      middleCache.entry = composeMiddles();
     });
   }
 
   app.use(async (ctx, next) => {
-    if (middleCache.mixed) {
+    if (middleCache.entry) {
       const sessionInjector = ctx.epii as IInjector;
-      await middleCache.mixed.call(null, sessionInjector.getHandler(), next);
+      await middleCache.entry.call(null, sessionInjector.getHandler(), next);
     } else {
       await next();
     }

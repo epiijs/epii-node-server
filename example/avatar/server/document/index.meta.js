@@ -1,8 +1,11 @@
 module.exports = {
   head: {
-    icon: 'epii-icon.png',
+    icons: 'epii-icon.png',
     title: 'EPII Avatar',
-    styles: ['reset.css', 'client/index.css']
+    styles: [
+      'reset.css',
+      'client/index.css'
+    ]
   },
   body: {
     content: 'client/index.html',
@@ -11,4 +14,4 @@ module.exports = {
       'client/index.js'
     ]
   }
-}
+};
