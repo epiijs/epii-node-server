@@ -1,24 +1,36 @@
 module.exports = {
-  name: 'example',
-  port: 8080,
-  path: {
+  shared: {
+    name: 'avatar',
+    port: 8080,
     root: __dirname,
-    client: 'client',
-    server: {
+    path: {
       service: 'server/service',
       middleware: 'server/middleware',
       controller: 'server/controller',
       document: 'server/document',
-    },
-    static: 'static'
+      static: 'static'
+    }
   },
-  static: {
-    prefix: '__file',
+
+  logger: {
   },
-  middle: {
+
+  loader: {
+  },
+
+  filter: {
     series: ['header']
   },
-  expert: {
-    'well-known': true
-  }
+
+  router: {
+  },
+
+  render: {
+    action: { // 名字好奇怪
+    },
+    static: {
+      prefix: '__file',
+      expose: ['.well-known']
+    }
+  },
 }

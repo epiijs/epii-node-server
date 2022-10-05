@@ -1,19 +1,19 @@
-import { IRender } from '../kernel/render';
+import { IRender } from '../types';
 
-import FileRender from './render-file';
-import JsonRender from './render-json';
-import JumpRender from './render-jump';
-import TextRender from './render-text';
-import ViewRender from './render-view';
+import fileRender from './render-file';
+import jsonRender from './render-json';
+import jumpRender from './render-jump';
+import textRender from './render-text';
+import viewRender from './render-view';
 
 const renders: {
   [key in string]: IRender;
 } = {
-  file: FileRender,
-  json: JsonRender,
-  jump: JumpRender,
-  text: TextRender,
-  view: ViewRender,
+  file: fileRender,
+  json: jsonRender,
+  jump: jumpRender,
+  text: textRender,
+  view: viewRender,
 };
 
 export default renders;

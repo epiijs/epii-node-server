@@ -1,6 +1,6 @@
 import { Context } from 'koa';
 
-import { IActionResult, IRender } from '../kernel/render';
+import { IActionResult, IRender } from '../types';
 
 export interface IJsonActionResult extends IActionResult {
   data: any;

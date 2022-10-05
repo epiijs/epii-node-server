@@ -1,7 +1,8 @@
 import * as http from 'http';
 
-import logger from './kernel/logger';
-import { createServer, IServerConfig } from './server';
+import logger from './logger';
+import { createServer } from './server';
+import { IServerConfig } from './types';
 
 export async function startServer(config: IServerConfig) {
   const handler = await createServer(config);
@@ -13,4 +14,8 @@ export async function startServer(config: IServerConfig) {
   logger.ready(` |- port = ${config.port}`);
 
   return httpServer;
+}
+
+export type {
+  IServerConfig
 }

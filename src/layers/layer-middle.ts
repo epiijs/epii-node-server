@@ -1,21 +1,19 @@
 import * as path from 'path';
 
-import { Next } from 'koa';
 import compose from 'koa-compose';
 
-import logger from '../kernel/logger';
-import loader from '../kernel/loader';
-import { IInjector, IServiceHandler } from '../kernel/inject';
-import { IApp, IServerConfig } from '../server';
+import { IInjector } from '@epiijs/inject';
 
-export type MiddleFn = (services: IServiceHandler, next: Next) => Promise<void>;
+import loader from '../loader';
+import logger from '../logger';
+import { IApp, IServerConfig, MiddleFn } from '../types';
 
 export default async function middleLayer(app: IApp) {
   const injector = app.epii;
-  const config = injector.getService('config') as IServerConfig;
-  const hotReload = config.expert['hot-reload'];
+  const config = injector.service('config') as IServerConfig;
+  const hotReload = config.loader.reload;
 
-  const middleDir = path.join(config.path.root, config.path.server.middleware);
+  const middleDir = path.join(config.root, config.path.middleware);
   const middleFiles = await loader.listFilesOfDir(middleDir);
   const middleCache: {
     items: { [key in string]: MiddleFn };
@@ -36,10 +34,9 @@ export default async function middleLayer(app: IApp) {
   }
 
   function composeMiddles(): MiddleFn | undefined {
-    const middles = config.middle.series
+    const middles = config.loader.middleware
       .map(name => middleCache.items[name])
       .filter(Boolean); // null occurs when reloading
-    console.log(config.middle, middles);
     return middles.length > 0 ? compose(middles) : undefined;
   }
 
@@ -61,7 +58,7 @@ export default async function middleLayer(app: IApp) {
   app.use(async (ctx, next) => {
     if (middleCache.entry) {
       const sessionInjector = ctx.epii as IInjector;
-      await middleCache.entry.call(null, sessionInjector.getHandler(), next);
+      await middleCache.entry.call(null, sessionInjector.handler(), next);
     } else {
       await next();
     }

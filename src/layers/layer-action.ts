@@ -1,22 +1,24 @@
 import * as path from 'path';
 
-import logger from '../kernel/logger';
-import loader from '../kernel/loader';
-import { IInjector, IServiceHandler } from '../kernel/inject';
-import { HTTPMethod, IRouteRule, isRouteEqual, Router } from '../kernel/router';
-import { IActionResult } from '../kernel/render';
-import { IApp, IServerConfig } from '../server';
-import renders from '../renders';
-import { arrayify } from '../types';
+import { IInjector } from '@epiijs/inject';
 
-export type ActionFn = (services: IServiceHandler) => Promise<IActionResult>;
+import loader from '../loader';
+import logger from '../logger';
+import { HTTPMethod, IRouteRule, isRouteEqual, Router } from '../../old/kernel/router';
+import renders from '../renders';
+import { ActionFn, IActionResult, IApp, IServerConfig } from '../types';
+
+function arrayify(o: any): any[] {
+  if (!o) { return []; }
+  return Array.isArray(o) ? o : [o];
+}
 
 export interface IAction {
   route: IRouteRule;
   entry: ActionFn;
 }
 
-function checkAction(action: any): IAction {
+function lintAction(action: any): IAction {
   // // normalize action verb
   // // support 'verb' & 'method' & 'verbs' & 'methods'
   // let routeVerbs = uniq(
@@ -50,19 +52,18 @@ function checkActionResult(result: any): IActionResult {
 
 export default async function actionLayer(app: IApp) {
   const injector = app.epii;
-  const config = injector.getService('config') as IServerConfig;
-  const hotReload = config.expert['hot-reload'];
+  const config = injector.service('config') as IServerConfig;
+  const hotReload = config.loader.reload;
 
   const router = new Router();
 
-  const actionDir = path.join(config.path.root, config.path.server.controller);
+  const actionDir = path.join(config.root, config.path.controller);
   const actionFiles = await loader.listFilesOfDir(actionDir);
 
   const mapOfRouteRulesForFile: { [key in string]: IRouteRule[] } = {};
 
   function loadActionsModule(p: string) {
-    const module = arrayify(loader.loadModule(p));
-    const actions = module.map(e => checkAction(e));
+    const actions = arrayify(loader.loadModule(p)).map(e => lintAction(e));
     actions.forEach(action => {
       router.appendRule(action.route, action.entry);
     });
@@ -99,9 +100,9 @@ export default async function actionLayer(app: IApp) {
     }
 
     const sessionInjector = ctx.epii as IInjector;
-    sessionInjector.setService('params', matchResult.params);
+    sessionInjector.provide('params', matchResult.params);
     const actionFn = matchResult.extra as ActionFn;
-    const actionResult = await actionFn(sessionInjector.getHandler());
+    const actionResult = await actionFn(sessionInjector.handler());
     // TODO - catch and handle error
     // TODO - check action result
 

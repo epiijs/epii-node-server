@@ -1,13 +1,10 @@
-import launchLayer from './layer-launch';
-import loggerLayer from './layer-logger';
-import middleLayer from './layer-middle';
-import actionLayer from './layer-action';
-import staticLayer from './layer-static';
+import useKernelLayer from './layer-kernel';
+import useStaticLayer from './layer-static';
+import useMiddleLayer from './layer-middle';
+import useActionLayer from './layer-action';
 
 export default {
-  launch: launchLayer,
-  logger: loggerLayer,
-  middle: middleLayer,
-  action: actionLayer,
-  static: staticLayer,
-};
+  useKernelLayer,
+  useStaticLayer,
+  useMiddleLayer
+}

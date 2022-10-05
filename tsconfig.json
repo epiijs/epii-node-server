@@ -5,8 +5,9 @@
     "outDir": "build",
     "declaration": true,
     "esModuleInterop": false,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "strictNullChecks": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["old/**/*.ts", "src/**/*.ts"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

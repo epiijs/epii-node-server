@@ -49,7 +49,7 @@ export function loadModule<T = unknown>(path: string, callback?: LoadModuleFn<T>
   }
   // try to (re)load module
   let o: T | undefined = undefined;
-  let error = null;
+  let error: any = null;
   try {
     delete require.cache[require.resolve(path)];
     o = require(path) as T;

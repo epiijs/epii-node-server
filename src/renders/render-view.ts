@@ -1,12 +1,11 @@
 import * as path from 'path';
 
 import { Context } from 'koa';
+import { IInjector } from '@epiijs/inject';
 import { Document, ILoader, FileLoader, renderToString } from '@epiijs/portal';
 
-import { IInjector } from '../kernel/inject';
-import { loadModule } from '../kernel/loader';
-import { IActionResult, IRender } from '../kernel/render';
-import { IServerConfig } from '../server';
+import { loadModule } from '../loader';
+import { IActionResult, IRender, IServerConfig } from '../types';
 
 const CONTEXT: {
   portals: Record<string, Document>,
@@ -28,20 +27,20 @@ const viewRender: IRender = {
 
   outputActionResult: async (ctx: Context, result: IActionResult): Promise<void> => {
     const sessionInjector = ctx.epii as IInjector;
-    const config = sessionInjector.getService('config') as IServerConfig;
-    const hotReload = config.expert['hot-reload'];
+    const config = sessionInjector.service('config') as IServerConfig;
+    const hotReload = config.loader.reload;
 
     if (CONTEXT.loaders.length === 0) {
       CONTEXT.loaders.push(new FileLoader({
         prefix: config.static.prefix,
-        source: path.join(config.path.root, config.path.static)
+        source: path.join(config.root, config.path.static)
       }));
     }
 
     const { name, data } = result as IViewActionResult;
 
     if (!CONTEXT.portals[name] || hotReload) {
-      const file = path.join(config.path.root, config.path.server.document, `${name}.meta.js`);
+      const file = path.join(config.root, config.path.portal, `${name}.meta.js`);
       const meta = loadModule(file);
       CONTEXT.portals[name] = new Document(meta);
     }

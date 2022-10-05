@@ -1,9 +1,9 @@
 import { createReadStream, ReadStream } from 'fs';
 
-import { contentType } from 'mime-types';
 import { Context } from 'koa';
+import { contentType } from 'mime-types';
 
-import { IActionResult, IRender } from '../kernel/render';
+import { IActionResult, IRender } from '../types';
 
 export interface IFileActionResult extends IActionResult {
   mode: 'file' | 'play';
