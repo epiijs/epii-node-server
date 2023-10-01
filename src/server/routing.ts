@@ -34,7 +34,10 @@ async function loadActionModule({ dirName, fileName }: {
   }
   const relativePath = path.relative(dirName, fileName);
   const actionModule = await importModule(fileName) as IActionModule;
-  const { default: actionFn, registerAction } = actionModule;
+  const {
+    default: actionFn,
+    registerAction
+  } = actionModule;
   if (typeof actionFn !== 'function') {
     console.log(`error: action.default should be function at ${relativePath}`);
     return;
@@ -56,7 +59,7 @@ async function loadActionModule({ dirName, fileName }: {
 }
 
 async function findAllActions(config: IAppConfig): Promise<IRefAction[]> {
-  const actionDir = path.join(config.root, config.dirs.target, 'server/actions');
+  const actionDir = path.join(config.root, config.dirs.target, config.dirs.server, 'actions');
   const actionFilePattern = `${actionDir}/**/index.js`;
   const actionFileNames = await glob(actionFilePattern);
   const actions: IRefAction[] = [];

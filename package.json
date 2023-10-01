@@ -1,6 +1,6 @@
 {
   "name": "@epiijs/server",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A simple server framework.",
   "engines": {
     "node": ">=18.0.0"
@@ -30,15 +30,15 @@
   "homepage": "https://github.com/epiijs/server#readme",
   "devDependencies": {
     "@epiijs/eslint-config": "^0.1.4",
-    "@tsconfig/node18": "^18.2.0",
-    "@types/node": "^20.4.1",
-    "eslint": "^8.44.0"
+    "@tsconfig/node18": "^18.2.2",
+    "@types/node": "^20.8.0",
+    "eslint": "^8.50.0"
   },
   "dependencies": {
-    "@epiijs/config": "^0.1.0",
+    "@epiijs/config": "^0.1.2",
     "@epiijs/inject": "^0.6.0",
-    "bl": "^6.0.3",
+    "bl": "^6.0.7",
     "find-my-way": "^7.6.2",
-    "glob": "^10.3.2"
+    "glob": "^10.3.10"
   }
 }

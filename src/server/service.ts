@@ -28,18 +28,21 @@ async function loadServiceModule({ dirName, fileName }: {
 }): Promise<IRefService | undefined> {
   interface IServiceModule {
     default: unknown;
-    // registerService?: () => IServiceOptions;
+    registerService?: () => IServiceOptions;
   }
   const relativePath = path.relative(dirName, fileName);
-  const { default: maybeServiceFn } = await importModule(fileName) as IServiceModule;
+  const {
+    default: maybeServiceFn,
+    registerService
+  } = await importModule(fileName) as IServiceModule;
   const serviceFn: ServiceFactoryFn = (services: ServiceLocator): unknown => {
     return typeof maybeServiceFn === 'function'
       ? maybeServiceFn(services)
       : maybeServiceFn;
   };
-  // if (registerService && typeof registerService === 'function') {
-  //   // TODO: const options = registerService();
-  // }
+  if (registerService && typeof registerService === 'function') {
+    // TODO: const serviceOptions = registerAction();
+  }
   const defaultName = relativePath.replace(/\/?index\.js$/, '');
   const refService: IRefService = {
     default: serviceFn,
@@ -53,7 +56,7 @@ async function loadServiceModule({ dirName, fileName }: {
 }
 
 async function findAllServices(config: IAppConfig): Promise<IRefService[]> {
-  const serviceDir = path.join(config.root, config.dirs.target, 'server/services');
+  const serviceDir = path.join(config.root, config.dirs.target, config.dirs.server, 'services');
   const serviceFilePattern = `${serviceDir}/**/index.js`;
   const serviceFileNames = await glob(serviceFilePattern);
   const services: IRefService[] = [];
