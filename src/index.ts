@@ -1,4 +1,4 @@
-import { IAppConfig } from '@epiijs/config';
+import { IMaybeAppConfig } from '@epiijs/config';
 
 import { HTTPMethod } from './server/routing';
 import { IncomingMessage, OutgoingMessage } from './server/message';
@@ -14,7 +14,7 @@ type Context = IContextForHandler & IContextForService;
 type ActionFn = ActionFnInner<Context>;
 
 export type {
-  IAppConfig,
+  IMaybeAppConfig,
   HTTPMethod,
 
   ActionResult,
