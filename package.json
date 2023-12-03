@@ -35,7 +35,7 @@
     "eslint": "^8.50.0"
   },
   "dependencies": {
-    "@epiijs/config": "^0.1.2",
+    "@epiijs/config": "^0.2.1",
     "@epiijs/inject": "^0.6.0",
     "bl": "^6.0.7",
     "find-my-way": "^7.6.2",

@@ -1,12 +1,12 @@
 import http from 'http';
 
-import { IAppConfig, verifyConfig } from '@epiijs/config';
+import verifyConfig, { IMaybeAppConfig } from '@epiijs/config';
 
 import { mountRouting } from './routing';
 import { mountService } from './service';
 import { buildContext } from './context';
 
-export async function startServer(config: Partial<IAppConfig>): Promise<void> {
+export async function startServer(config: IMaybeAppConfig): Promise<void> {
   const verifiedConfig = verifyConfig(config);
 
   const {
@@ -33,7 +33,8 @@ export async function startServer(config: Partial<IAppConfig>): Promise<void> {
     console.log('server closed');
   });
 
-  httpServer.listen(verifiedConfig.port, () => {
-    console.log(`server started on port ${verifiedConfig.port}`);
+  const serverPort = verifiedConfig.port.server;
+  httpServer.listen(serverPort, () => {
+    console.log(`server started on port ${serverPort}`);
   });
 }
