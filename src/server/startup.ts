@@ -1,10 +1,14 @@
 import http from 'http';
 
-import verifyConfig, { IMaybeAppConfig } from '@epiijs/config';
+import verifyConfig, { IAppConfig, IMaybeAppConfig } from '@epiijs/config';
 
-import { mountRouting } from './routing';
-import { mountService } from './service';
-import { buildContext } from './context';
+import { mountRouting } from './routing.js';
+import { mountService } from './service.js';
+import { buildContext } from './context.js';
+
+interface IContextForStartup {
+  getAppConfig: () => IAppConfig;
+}
 
 export async function startServer(config: IMaybeAppConfig): Promise<void> {
   const verifiedConfig = verifyConfig(config);
@@ -18,10 +22,19 @@ export async function startServer(config: IMaybeAppConfig): Promise<void> {
   } = await mountService(verifiedConfig);
   
   const processInjector = spawnInjector();
+
   const httpServer = http.createServer((request, response) => {
     const context = buildContext();
+    context.install('getAppConfig', () => {
+      return verifiedConfig;
+    }, undefined);
+
     const sessionInjector = spawnInjector(processInjector, context);
-    handleRequest(request, response, context).finally(() => {
+
+    handleRequest(request, response, context).catch(error => {
+      // TODO: log kernel error
+      console.error(error);
+    }).finally(() => {
       sessionInjector.dispose();
       context.dispose();
     });
@@ -38,3 +51,7 @@ export async function startServer(config: IMaybeAppConfig): Promise<void> {
     console.log(`server started on port ${serverPort}`);
   });
 }
+
+export type {
+  IContextForStartup
+};

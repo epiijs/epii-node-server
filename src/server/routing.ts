@@ -6,9 +6,9 @@ import { glob } from 'glob';
 
 import { IAppConfig } from '@epiijs/config';
 
-import { ActionFnInner, performAction } from './handler';
-import { IOutgoingMessage, buildIncomingMessage, buildOutgoingMessage } from './message';
-import { importModule } from './resolve';
+import { ActionFnInner, performAction } from './handler.js';
+import { IOutgoingMessage, buildIncomingMessage, buildOutgoingMessage } from './message.js';
+import { importModule } from './resolve.js';
 
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 
@@ -35,10 +35,10 @@ async function loadActionModule({ dirName, fileName }: {
   const relativePath = path.relative(dirName, fileName);
   const actionModule = await importModule(fileName) as IActionModule;
   const {
-    default: actionFn,
+    default: maybeActionFn,
     registerAction
   } = actionModule;
-  if (typeof actionFn !== 'function') {
+  if (typeof maybeActionFn !== 'function') {
     console.log(`error: action.default should be function at ${relativePath}`);
     return;
   }
@@ -48,7 +48,7 @@ async function loadActionModule({ dirName, fileName }: {
   const defaultPath = '/' + relativePath.replace(/\/?index\.js$/, '');
   const routePath = defaultPath.replace(/\$/g, ':');
   const refAction: IRefAction = {
-    default: actionFn,
+    default: maybeActionFn,
     options: {
       routes: [
         { method: 'GET', path: routePath }
@@ -122,6 +122,7 @@ export async function mountRouting(config: IAppConfig): Promise<IRouter> {
           content: 'not found'
         });
       }
+
       return new Promise((resolve, reject) => {
         response.on('error', reject);
         response.on('finish', resolve);

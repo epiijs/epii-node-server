@@ -1,7 +1,7 @@
-type ContextHookFn<P = unknown> = (self: P, ...args: any[]) => unknown;
+type ContextHookFn<P = void> = (self: P, ...args: any[]) => unknown;
 
 interface IContextInner {
-  install: <P = unknown>(key: string, hook: ContextHookFn<P>, self: P) => void;
+  install: <P = void>(key: string, hook: ContextHookFn<P>, self: P) => void;
   resolve: () => unknown;
   dispose: () => void;
 }

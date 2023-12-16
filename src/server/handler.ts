@@ -1,8 +1,8 @@
-import { IContextInner } from './context';
+import { IContextInner } from './context.js';
 import {
   IncomingMessage,
   AnyForOutgoingMessage, OutgoingMessage, buildOutgoingMessage
-} from './message';
+} from './message.js';
 
 type ActionResult = AnyForOutgoingMessage;
 type ActionFnInner<C = unknown> = (props: IncomingMessage, context: C) => Promise<ActionResult>;
