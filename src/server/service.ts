@@ -4,8 +4,8 @@ import { glob } from 'glob';
 import { IAppConfig } from '@epiijs/config';
 import { IInjector, ServiceFactoryFn, ServiceLocator, createInjector } from '@epiijs/inject';
 
-import { IContextInner } from './context';
-import { importModule } from './resolve';
+import { IContextInner } from './context.js';
+import { importModule } from './resolve.js';
 
 enum EServiceScope {
   Process = 'Process',

@@ -1,4 +1,4 @@
-# epii-server
+# @epiijs/server
 
 A simple server framework.
 
@@ -6,6 +6,8 @@ A simple server framework.
 - file-system based routor
 - handler-in-action filter
 - service dependency injection
+
+`v3.x` is only for ES module. 
 
 # Install
 
@@ -29,6 +31,13 @@ npm i @epiijs/server --save
 └─ start.ts
 ```
 
+will routes requests like this
+
+```
+=> /$params
+=> /
+```
+
 ## start server
 ```ts
 import { startServer } from '@epiijs/server';
@@ -37,12 +46,14 @@ startServer({
   name: 'your-server',
   port: 8080,
   path: {
-    root: __dirname,
+    root: __dirname // or getDirNameByImportMeta(import.meta)
   }
 });
 ```
 
 ## handle request by *action*
+
+Provide request handlers in `/actions`.
 
 ```ts
 import {
@@ -98,7 +109,7 @@ export default async function (props: IncomingMessage, context: Context): Promis
 
 ## inject *service* as dependency
 
-Provide service factory in `/services` at first.
+Provide service factory in `/services`.
 
 ```ts
 export interface IUserService {}

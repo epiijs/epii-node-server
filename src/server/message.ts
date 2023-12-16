@@ -3,7 +3,7 @@ import stream, { Readable } from 'stream';
 
 import { BufferList } from 'bl';
 
-import { HTTPMethod } from './routing';
+import { HTTPMethod } from './routing.js';
 
 type ParamsValue = string | undefined;
 type HeaderValue = string | string[] | undefined;
