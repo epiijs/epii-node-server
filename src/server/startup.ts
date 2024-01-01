@@ -1,4 +1,4 @@
-import http from 'http';
+import http, { Server } from 'http';
 
 import verifyConfig, { IAppConfig, IMaybeAppConfig } from '@epiijs/config';
 
@@ -10,7 +10,11 @@ interface IContextForStartup {
   getAppConfig: () => IAppConfig;
 }
 
-export async function startServer(config: IMaybeAppConfig): Promise<void> {
+interface IStartupResult {
+  httpServer: Server;
+}
+
+export async function startServer(config: IMaybeAppConfig): Promise<IStartupResult> {
   const verifiedConfig = verifyConfig(config);
 
   const {
@@ -50,8 +54,13 @@ export async function startServer(config: IMaybeAppConfig): Promise<void> {
   httpServer.listen(serverPort, () => {
     console.log(`server started on port ${serverPort}`);
   });
+
+  return {
+    httpServer
+  };
 }
 
 export type {
-  IContextForStartup
+  IContextForStartup,
+  IStartupResult
 };
