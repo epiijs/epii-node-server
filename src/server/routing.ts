@@ -8,7 +8,7 @@ import { IAppConfig } from '@epiijs/config';
 
 import { ActionFnInner, performAction } from './handler.js';
 import { IOutgoingMessage, buildIncomingMessage, buildOutgoingMessage } from './message.js';
-import { importModule } from './resolve.js';
+import { importModule } from './runtime.js';
 
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 
@@ -39,7 +39,7 @@ async function loadActionModule({ dirName, fileName }: {
     registerAction
   } = actionModule;
   if (typeof maybeActionFn !== 'function') {
-    console.log(`error: action.default should be function at ${relativePath}`);
+    console.error(`action.default should be function at ${relativePath}`);
     return;
   }
   if (registerAction && typeof registerAction === 'function') {

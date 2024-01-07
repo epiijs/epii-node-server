@@ -1,6 +1,6 @@
 {
   "name": "@epiijs/server",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "A simple server framework.",
   "engines": {
     "node": ">=20.0.0"
@@ -36,9 +36,9 @@
     "eslint": "^8.56.0"
   },
   "dependencies": {
-    "@epiijs/config": "^0.4.2",
+    "@epiijs/config": "^0.5.0",
     "@epiijs/inject": "^0.7.1",
-    "bl": "^6.0.9",
+    "bl": "^6.0.10",
     "find-my-way": "^8.0.0",
     "glob": "^10.3.10",
     "mime-types": "^2.1.35"

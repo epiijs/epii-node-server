@@ -1,3 +1,5 @@
+import { IAppConfig } from '@epiijs/config';
+
 type ContextHookFn<P = void> = (self: P, ...args: any[]) => unknown;
 
 interface IContextInner {
@@ -33,6 +35,26 @@ export function buildContext(): IContextInner {
   };
 
   return context as IContextInner;
+}
+
+export function getVerboseOutput(config: IAppConfig): (...args: unknown[]) => void {
+  if (!config.flag['verbose']) {
+    return (): void => {};
+  }
+  return (...args: unknown[]): void => {
+    console.log(...args);
+  }
+}
+
+export async function importModule(fileName: string): Promise<unknown> {
+  const maybeModule = await import(fileName) as {
+    __esModule?: boolean;
+    default?: unknown;
+  };
+  if (maybeModule.__esModule) {
+    return maybeModule.default;
+  }
+  return maybeModule as unknown;
 }
 
 export type {

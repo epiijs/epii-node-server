@@ -4,10 +4,11 @@ import verifyConfig, { IAppConfig, IMaybeAppConfig } from '@epiijs/config';
 
 import { mountRouting } from './routing.js';
 import { mountService } from './service.js';
-import { buildContext } from './context.js';
+import { buildContext, getVerboseOutput } from './runtime.js';
 
 interface IContextForStartup {
   getAppConfig: () => IAppConfig;
+  getAppLogger: (...args: unknown[]) => void;
 }
 
 interface IStartupResult {
@@ -16,6 +17,7 @@ interface IStartupResult {
 
 export async function startServer(config: IMaybeAppConfig): Promise<IStartupResult> {
   const verifiedConfig = verifyConfig(config);
+  const verbose = getVerboseOutput(verifiedConfig);
 
   const {
     handleRequest,
@@ -29,14 +31,16 @@ export async function startServer(config: IMaybeAppConfig): Promise<IStartupResu
 
   const httpServer = http.createServer((request, response) => {
     const context = buildContext();
+
     context.install('getAppConfig', () => {
       return verifiedConfig;
     }, undefined);
 
+    context.install('getAppLogger', verbose, undefined);
+
     const sessionInjector = spawnInjector(processInjector, context);
 
     handleRequest(request, response, context).catch(error => {
-      // TODO: log kernel error
       console.error(error);
     }).finally(() => {
       sessionInjector.dispose();
@@ -47,12 +51,12 @@ export async function startServer(config: IMaybeAppConfig): Promise<IStartupResu
   httpServer.on('close', () => {
     processInjector.dispose();
     disposeRouter();
-    console.log('server closed');
+    verbose('server closed');
   });
 
   const serverPort = verifiedConfig.port.server;
   httpServer.listen(serverPort, () => {
-    console.log(`server started on port ${serverPort}`);
+    verbose(`server started on port ${serverPort}`);
   });
 
   return {
