@@ -142,3 +142,6 @@ export default async function (props: IncomingMessage, context: Context): Promis
 ## Document
 
 WIP
+
+* global error handling
+* declare action and service

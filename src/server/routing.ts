@@ -21,8 +21,12 @@ interface IRefAction {
   default: ActionFnInner;
   options: {
     routes: IRoute[];
+    global?: boolean;
   };
 }
+
+type ActionDeclareResult = IRefAction['options'];
+type ActionDeclareFn = () => ActionDeclareResult;
 
 async function loadActionModule({ dirName, fileName }: {
   dirName: string;
@@ -30,29 +34,29 @@ async function loadActionModule({ dirName, fileName }: {
 }): Promise<IRefAction | undefined> {
   interface IActionModule {
     default: ActionFnInner;
-    registerAction?: () => IRoute[];
+    declare?: ActionDeclareFn;
   }
   const relativePath = path.relative(dirName, fileName);
   const actionModule = await importModule(fileName) as IActionModule;
   const {
     default: maybeActionFn,
-    registerAction
+    declare
   } = actionModule;
   if (typeof maybeActionFn !== 'function') {
     console.error(`action.default should be function at ${relativePath}`);
     return;
   }
-  if (registerAction && typeof registerAction === 'function') {
-    // TODO: const actionOptions = registerAction();
-  }
+  const maybeOptions = typeof declare === 'function' ? declare() : undefined;
   const defaultPath = '/' + relativePath.replace(/\/?index\.js$/, '');
-  const routePath = defaultPath.replace(/\$/g, ':');
   const refAction: IRefAction = {
     default: maybeActionFn,
     options: {
-      routes: [
-        { method: 'GET', path: routePath }
-      ]
+      ...maybeOptions,
+      routes: (maybeOptions?.routes || []).concat([
+        { method: 'GET', path: defaultPath }
+      ]).map(e => (
+        { method: e.method, path: e.path.replace(/\$/g, ':') }
+      ))
     }
   };
   return refAction;
@@ -85,6 +89,10 @@ export async function mountRouting(config: IAppConfig): Promise<IRouter> {
   const router = createFindMyWayRouter({
     ignoreTrailingSlash: true
   });
+  const globalRoutes: Record<string, Handler<HTTPVersion.V1> | undefined> = {
+    error: undefined
+  };
+
   const actions = await findAllActions(config);
   actions.forEach(action => {
     const routeFn: Handler<HTTPVersion.V1> = async (request, response, params, context) => {
@@ -92,42 +100,68 @@ export async function mountRouting(config: IAppConfig): Promise<IRouter> {
       const outgoingMessage = await performAction(action.default, incomingMessage, context);
       return outgoingMessage;
     };
-    const { routes } = action.options;
+    const { routes, global = true } = action.options;
     routes.forEach(route => {
+      // register routes to find-my-way
       router.on(route.method, route.path, routeFn);
+      // register global routes
+      if (route.method === 'GET' && global === true) {
+        const routeKey = {
+          '/error': 'error'
+        }[route.path];
+        if (routeKey) {
+          globalRoutes[routeKey] = routeFn;
+        }
+      }
     });
   });
 
   return {
     handleRequest: async (request, response, context): Promise<void> => {
+      interface IOutgoingMessageWithError extends IOutgoingMessage {
+        error?: unknown;
+      };
+
       if (!request.url) { request.url = '/'; }
-      let outgoingMessage: IOutgoingMessage;
+
+      const catchError = (error: unknown, status?: number): IOutgoingMessageWithError => {
+        const message = buildOutgoingMessage({ status: status || 500 });
+        Object.assign(message, { error });
+        return message as IOutgoingMessageWithError;
+      };
+
+      let outgoingMessage: IOutgoingMessageWithError;
+
       const findResult = router.find(request.method as HTTPMethod, request.url);
-      // TODO: support custom error builder
       if (findResult) {
         const { handler, params } = findResult;
-        try {
-          // TODO: find out why find-my-way requires search-params
-          outgoingMessage = await handler(request, response, params, context, {}) as IOutgoingMessage;
-        } catch (error) {
-          console.error(error);
-          outgoingMessage = buildOutgoingMessage({
-            status: 500,
-            content: 'internal server error'
+        // TODO: find out why find-my-way requires search-params
+        outgoingMessage = await handler(request, response, params, context, {}).catch(catchError);
+      } else {
+        outgoingMessage = catchError(undefined, 404);
+      }
+
+      if (outgoingMessage.error) {
+        if (globalRoutes.error) {
+          // sorry to copy outgoingMessage as fake params
+          const params = { ...outgoingMessage } as unknown as Record<string, string>;
+          outgoingMessage = await globalRoutes.error(request, response, params, context, {}).catch((error: unknown) => {
+            console.error('error occurred in global error handling', error);
+            return catchError(error);
           });
         }
-      } else {
-        outgoingMessage = buildOutgoingMessage({
-          status: 404,
-          content: 'not found'
-        });
+      }
+
+      if (!outgoingMessage) {
+        outgoingMessage = buildOutgoingMessage({ status: 404 });
       }
 
       return new Promise((resolve, reject) => {
+        const message = outgoingMessage as IOutgoingMessage;
         response.on('error', reject);
         response.on('finish', resolve);
-        response.writeHead(outgoingMessage.status, outgoingMessage.headers);
-        response.end(outgoingMessage.content);
+        response.writeHead(message.status, message.headers);
+        response.end(message.content);
       });
     },
 
@@ -139,5 +173,7 @@ export async function mountRouting(config: IAppConfig): Promise<IRouter> {
 
 export type {
   HTTPMethod,
-  IRouter
+  IRouter,
+  ActionDeclareResult,
+  ActionDeclareFn
 };

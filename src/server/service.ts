@@ -11,15 +11,16 @@ enum EServiceScope {
   Session = 'Session'
 }
 
-interface IServiceOptions {
-  name: string;
-  scope: EServiceScope;
-}
-
 interface IRefService {
   default: ServiceFactoryFn;
-  options: IServiceOptions;
+  options: {
+    name: string;
+    scope: EServiceScope;
+  };
 }
+
+type ServiceDeclareResult = IRefService['options'];
+type ServiceDeclareFn = () => ServiceDeclareResult;
 
 async function loadServiceModule({ dirName, fileName }: {
   dirName: string;
@@ -27,28 +28,26 @@ async function loadServiceModule({ dirName, fileName }: {
 }): Promise<IRefService | undefined> {
   interface IServiceModule {
     default: unknown;
-    registerService?: () => IServiceOptions;
+    declare?: () => IRefService['options'];
   }
   const relativePath = path.relative(dirName, fileName);
   const {
     default: maybeServiceFn,
-    registerService
+    declare
   } = await importModule(fileName) as IServiceModule;
   const serviceFn: ServiceFactoryFn = (services: ServiceLocator): unknown => {
     return typeof maybeServiceFn === 'function'
       ? maybeServiceFn(services)
       : maybeServiceFn;
   };
-  if (registerService && typeof registerService === 'function') {
-    // TODO: const serviceOptions = registerAction();
-  }
+  const serviceOptions = typeof declare === 'function' ? declare() : undefined;
   const defaultName = relativePath.replace(/\/?index\.js$/, '');
   const refService: IRefService = {
     default: serviceFn,
     options: {
       name: defaultName,
-      scope: EServiceScope.Process
-      // ...serviceOptions
+      scope: EServiceScope.Process,
+      ...serviceOptions
     }
   };
   return refService;
@@ -113,7 +112,8 @@ export async function mountService(config: IAppConfig): Promise<IServiceRegistry
 
 export type {
   ServiceFactoryFn,
+  ServiceDeclareResult,
+  ServiceDeclareFn,
   ServiceLocator,
-  IServiceOptions,
   IContextForService
 };

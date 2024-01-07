@@ -113,12 +113,13 @@ export function buildOutgoingMessage(message: AnyForOutgoingMessage): IOutgoingM
     };
   } else {
     const maybeOutgoingMessage = message as Partial<IOutgoingMessage>;
+    const maybeContentIsString = typeof maybeOutgoingMessage.content === 'string' || maybeOutgoingMessage.content == null;
     outgoingMessage = {
       status: maybeOutgoingMessage.status || 200,
       headers: maybeOutgoingMessage.headers || {
-        'content-type': typeof maybeOutgoingMessage.content === 'string' ? 'text/plain; charset=utf-8' : 'application/octet-stream'
+        'content-type': maybeContentIsString ? 'text/plain; charset=utf-8' : 'application/octet-stream'
       },
-      content: maybeOutgoingMessage.content
+      content: maybeOutgoingMessage.content || ''
     };
   }
   return outgoingMessage;
