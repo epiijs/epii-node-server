@@ -8,7 +8,7 @@ import { HTTPMethod } from './routing.js';
 type ParamsValue = string | undefined;
 type HeaderValue = string | string[] | undefined;
 
-function isReadableStream(o: unknown): boolean {
+function isReadableStream(o: unknown): o is Readable {
   return o instanceof Readable;
 }
 
@@ -109,7 +109,7 @@ export function buildOutgoingMessage(message: AnyForOutgoingMessage): IOutgoingM
       headers: {
         'content-type': 'application/octet-stream'
       },
-      content: message as Buffer | Readable
+      content: message
     };
   } else {
     const maybeOutgoingMessage = message as Partial<IOutgoingMessage>;
@@ -123,6 +123,24 @@ export function buildOutgoingMessage(message: AnyForOutgoingMessage): IOutgoingM
     };
   }
   return outgoingMessage;
+}
+
+export async function applyOutgoingMessage(message: IOutgoingMessage, response: http.ServerResponse): Promise<void> {
+  return new Promise((resolve, reject) => {
+    response.on('error', reject);
+    response.on('finish', resolve);
+    response.writeHead(message.status, message.headers);
+    if (message.content) {
+      if (isReadableStream(message.content)) {
+        message.content.pipe(response);
+      } else {
+        response.write(message.content);
+        response.end();
+      }
+    } else {
+      response.end();
+    }
+  });
 }
 
 export type {

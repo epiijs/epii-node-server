@@ -1,4 +1,5 @@
-import fs from 'fs/promises';
+import fs from 'fs';
+import { stat, readFile } from 'fs/promises';
 import path from 'path';
 import mime from 'mime-types';
 
@@ -13,8 +14,6 @@ interface IHandlerOptionsForStaticFiles {
 }
 
 function createHandlerForStaticFiles(options: IHandlerOptionsForStaticFiles): HandlerFn {
-  // TODO: replace throw error with http response status code error
-
   const handlerFn: HandlerFn = async (dispose): Promise<ActionResult> => {
     let filePath = '';
     if (options.filePath) {
@@ -29,10 +28,10 @@ function createHandlerForStaticFiles(options: IHandlerOptionsForStaticFiles): Ha
       throw new Error('unsafe file access denied');
     }
 
+    const fileStat = await stat(filePath);
+    const fileTooLarge = fileStat.size > 1 * 1024 * 1024;
+    const fileContent = fileTooLarge ? fs.createReadStream(filePath) : await readFile(filePath, 'utf-8');
     const contentType = options.contentType || mime.contentType(path.extname(filePath)) || 'application/octet-stream';
-    const fileContent = await fs.readFile(filePath, 'utf-8');
-
-    // TODO: createReadStream if file size is large than ?
 
     dispose(() => {
       options.onDispose?.();
@@ -42,7 +41,8 @@ function createHandlerForStaticFiles(options: IHandlerOptionsForStaticFiles): Ha
       return {
         status: 200,
         headers: {
-          'content-type': contentType
+          'content-type': contentType,
+          ...fileTooLarge ? { 'content-length': fileStat.size.toString() } : undefined
         },
         content: fileContent
       };

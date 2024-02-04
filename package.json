@@ -1,6 +1,6 @@
 {
   "name": "@epiijs/server",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "description": "A simple server framework.",
   "engines": {
     "node": ">=20.0.0"
@@ -32,7 +32,7 @@
   "devDependencies": {
     "@epiijs/eslint-config": "^0.1.4",
     "@types/mime-types": "^2.1.4",
-    "@types/node": "^20.10.7",
+    "@types/node": "^20.11.16",
     "eslint": "^8.56.0"
   },
   "dependencies": {

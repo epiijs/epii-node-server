@@ -7,7 +7,7 @@ import { glob } from 'glob';
 import { IAppConfig } from '@epiijs/config';
 
 import { ActionFnInner, performAction } from './handler.js';
-import { IOutgoingMessage, buildIncomingMessage, buildOutgoingMessage } from './message.js';
+import { IOutgoingMessage, applyOutgoingMessage, buildIncomingMessage, buildOutgoingMessage } from './message.js';
 import { importModule } from './runtime.js';
 
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
@@ -100,12 +100,12 @@ export async function mountRouting(config: IAppConfig): Promise<IRouter> {
       const outgoingMessage = await performAction(action.default, incomingMessage, context);
       return outgoingMessage;
     };
-    const { routes, global = true } = action.options;
+    const { routes, global } = action.options;
     routes.forEach(route => {
       // register routes to find-my-way
       router.on(route.method, route.path, routeFn);
       // register global routes
-      if (route.method === 'GET' && global === true) {
+      if (route.method === 'GET' && global) {
         const routeKey = {
           '/error': 'error'
         }[route.path];
@@ -125,9 +125,9 @@ export async function mountRouting(config: IAppConfig): Promise<IRouter> {
       if (!request.url) { request.url = '/'; }
 
       const catchError = (error: unknown, status?: number): IOutgoingMessageWithError => {
-        const message = buildOutgoingMessage({ status: status || 500 });
-        Object.assign(message, { error });
-        return message as IOutgoingMessageWithError;
+        const message = buildOutgoingMessage({ status: status || 500 }) as IOutgoingMessageWithError;
+        message.error = error;
+        return message;
       };
 
       let outgoingMessage: IOutgoingMessageWithError;
@@ -143,7 +143,7 @@ export async function mountRouting(config: IAppConfig): Promise<IRouter> {
 
       if (outgoingMessage.error) {
         if (globalRoutes.error) {
-          // sorry to copy outgoingMessage as fake params
+          // sorry to copy outgoingMessage as fake params type
           const params = { ...outgoingMessage } as unknown as Record<string, string>;
           outgoingMessage = await globalRoutes.error(request, response, params, context, {}).catch((error: unknown) => {
             console.error('error occurred in global error handling', error);
@@ -156,13 +156,7 @@ export async function mountRouting(config: IAppConfig): Promise<IRouter> {
         outgoingMessage = buildOutgoingMessage({ status: 404 });
       }
 
-      return new Promise((resolve, reject) => {
-        const message = outgoingMessage as IOutgoingMessage;
-        response.on('error', reject);
-        response.on('finish', resolve);
-        response.writeHead(message.status, message.headers);
-        response.end(message.content);
-      });
+      return applyOutgoingMessage(outgoingMessage, response);
     },
 
     disposeRouter: () => {
