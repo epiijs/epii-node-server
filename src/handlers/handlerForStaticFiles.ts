@@ -30,7 +30,7 @@ function createHandlerForStaticFiles(options: IHandlerOptionsForStaticFiles): Ha
 
     const fileStat = await stat(filePath);
     const fileTooLarge = fileStat.size > 1 * 1024 * 1024;
-    const fileContent = fileTooLarge ? fs.createReadStream(filePath) : await readFile(filePath, 'utf-8');
+    const fileContent = fileTooLarge ? fs.createReadStream(filePath) : await readFile(filePath);
     const contentType = options.contentType || mime.contentType(path.extname(filePath)) || 'application/octet-stream';
 
     dispose(() => {
