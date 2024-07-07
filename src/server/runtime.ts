@@ -1,9 +1,7 @@
-import { IAppConfig } from '@epiijs/config';
-
-type ContextHookFn<P = void> = (self: P, ...args: any[]) => unknown;
+type ContextHookFn<P = void> = (bind: P, ...args: any[]) => unknown;
 
 interface IContextInner {
-  install: <P = void>(key: string, hook: ContextHookFn<P>, self: P) => void;
+  install: <P = void>(key: string, hook: ContextHookFn<P>, bind: P) => void;
   resolve: () => unknown;
   dispose: () => void;
 }
@@ -13,8 +11,8 @@ export function buildContext(): IContextInner {
 
   const context: Partial<IContextInner> = {};
 
-  context.install = <P>(key: string, hook: ContextHookFn<P>, self: P): void => {
-    methods[key] = (...args: unknown[]) => hook(self, ...args);
+  context.install = <P>(key: string, hook: ContextHookFn<P>, bind: P): void => {
+    methods[key] = (...args: unknown[]) => hook(bind, ...args);
   };
 
   context.resolve = () => {
@@ -35,26 +33,6 @@ export function buildContext(): IContextInner {
   };
 
   return context as IContextInner;
-}
-
-export function getVerboseOutput(config: IAppConfig): (...args: unknown[]) => void {
-  if (!config.flag['verbose']) {
-    return (): void => {};
-  }
-  return (...args: unknown[]): void => {
-    console.log(...args);
-  }
-}
-
-export async function importModule(fileName: string): Promise<unknown> {
-  const maybeModule = await import(fileName) as {
-    __esModule?: boolean;
-    default?: unknown;
-  };
-  if (maybeModule.__esModule) {
-    return maybeModule.default;
-  }
-  return maybeModule as unknown;
 }
 
 export type {

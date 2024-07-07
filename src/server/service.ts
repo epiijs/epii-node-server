@@ -4,7 +4,8 @@ import { glob } from 'glob';
 import { IAppConfig } from '@epiijs/config';
 import { IInjector, ServiceFactoryFn, ServiceLocator, createInjector } from '@epiijs/inject';
 
-import { IContextInner, importModule } from './runtime.js';
+import { importModule } from './require.js';
+import { IContextInner } from './runtime.js';
 
 enum EServiceScope {
   Process = 'Process',
@@ -71,11 +72,11 @@ async function findAllServices(config: IAppConfig): Promise<IRefService[]> {
   return services;
 }
 
-interface IHookSelf {
+interface IHookBind {
   services: ServiceLocator;
 }
 
-function useService({ services }: IHookSelf, name: string): unknown {
+function useService({ services }: IHookBind, name: string): unknown {
   return services[name];
 }
 
@@ -99,7 +100,7 @@ export async function mountService(config: IAppConfig): Promise<IServiceRegistry
         servicesForSession.forEach(service => {
           injector.provide(service.options.name, service.default);
         });
-        context?.install<IHookSelf>('useService', useService, { services: injector.service() as ServiceLocator });
+        context?.install<IHookBind>('useService', useService, { services: injector.service() as ServiceLocator });
       } else {
         servicesForProcess.forEach(service => {
           injector.provide(service.options.name, service.default);

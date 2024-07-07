@@ -19,11 +19,11 @@ class BreakActionError extends Error {
   }
 }
 
-interface IHookSelf {
+interface IHookBind {
   disposeFnQueue: HandlerDisposeFn[];
 }
 
-async function useHandler({ disposeFnQueue }: IHookSelf, handler: HandlerFn): Promise<void> {
+async function useHandler({ disposeFnQueue }: IHookBind, handler: HandlerFn): Promise<void> {
   let mutableDisposeFn: HandlerDisposeFn | undefined = undefined;
   const maybeAsyncResult = handler((fn: HandlerDisposeFn): void => {
     mutableDisposeFn = fn;
@@ -46,7 +46,7 @@ export async function performAction(action: ActionFnInner, props: IncomingMessag
   const handlerDisposeFnQueue: HandlerDisposeFn[] = [];
   // install useHandler hook
   const contextInner = context as IContextInner;
-  contextInner.install<IHookSelf>('useHandler', useHandler, { disposeFnQueue: handlerDisposeFnQueue });
+  contextInner.install<IHookBind>('useHandler', useHandler, { disposeFnQueue: handlerDisposeFnQueue });
   // perform action for result
   let mutableActionResult = await action(props, contextInner.resolve()).catch(error => {
     // catch BreakActionError as skip sugar 
