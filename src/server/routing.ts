@@ -80,12 +80,10 @@ async function findAllActions(config: IAppConfig): Promise<IRefAction[]> {
   return actions;
 }
 
-interface IRouter {
+export async function mountRouting(config: IAppConfig): Promise<{
   handleRequest: (request: http.IncomingMessage, response: http.ServerResponse, context: unknown) => Promise<void>;
   disposeRouter: () => void;
-}
-
-export async function mountRouting(config: IAppConfig): Promise<IRouter> {
+}> {
   const router = createFindMyWayRouter({
     ignoreTrailingSlash: true
   });
@@ -167,7 +165,6 @@ export async function mountRouting(config: IAppConfig): Promise<IRouter> {
 
 export type {
   HTTPMethod,
-  IRouter,
   ActionDeclareResult,
   ActionDeclareFn
 };

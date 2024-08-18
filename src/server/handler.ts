@@ -1,4 +1,4 @@
-import { IContextInner } from './runtime.js';
+import { IContextInner } from './context.js';
 import {
   IncomingMessage,
   AnyForOutgoingMessage, OutgoingMessage, buildOutgoingMessage

@@ -3,7 +3,7 @@ import http, { Server } from 'http';
 import verifyConfig, { IAppConfig, IMaybeAppConfig } from '@epiijs/config';
 
 import { buildLogging } from './logging.js';
-import { buildContext } from './runtime.js';
+import { buildContext } from './context.js';
 import { mountRouting } from './routing.js';
 import { mountService } from './service.js';
 
@@ -24,10 +24,11 @@ export async function startServer(config: IMaybeAppConfig): Promise<IStartupResu
     disposeRouter
   } = await mountRouting(verifiedConfig);
   const {
-    spawnInjector
+    buildInjectorForProcess,
+    buildInjectorForSession
   } = await mountService(verifiedConfig);
   
-  const processInjector = spawnInjector();
+  const processInjector = buildInjectorForProcess();
 
   const httpServer = http.createServer((request, response) => {
     const context = buildContext();
@@ -37,7 +38,7 @@ export async function startServer(config: IMaybeAppConfig): Promise<IStartupResu
       return verifiedConfig;
     }, undefined);
 
-    const sessionInjector = spawnInjector(processInjector, context);
+    const sessionInjector = buildInjectorForSession(processInjector, context);
 
     handleRequest(request, response, context).catch(error => {
       // TODO: logging.error

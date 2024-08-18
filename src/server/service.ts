@@ -5,7 +5,7 @@ import { IAppConfig } from '@epiijs/config';
 import { IInjector, ServiceFactoryFn, ServiceLocator, createInjector } from '@epiijs/inject';
 
 import { importModule } from './require.js';
-import { IContextInner } from './runtime.js';
+import { IContextInner } from './context.js';
 
 enum EServiceScope {
   Process = 'Process',
@@ -84,28 +84,30 @@ interface IContextForService {
   useService: <T = unknown>(name: string) => T;
 }
 
-interface IServiceRegistry {
-  spawnInjector: (inherit?: IInjector, context?: IContextInner) => IInjector;
-}
-
-export async function mountService(config: IAppConfig): Promise<IServiceRegistry> {
+export async function mountService(config: IAppConfig): Promise<{
+  buildInjectorForProcess: () => IInjector;
+  buildInjectorForSession: (inherit: IInjector, context: IContextInner) => IInjector;
+}> {
   const services = await findAllServices(config);
-  const servicesForProcess = services.filter(service => service.options.scope === EServiceScope.Process);
-  const servicesForSession = services.filter(service => service.options.scope === EServiceScope.Session);
+
   return {
-    spawnInjector: (inherit, context) => {
+    buildInjectorForProcess: () => {
       const injector = createInjector();
-      if (inherit) {
-        injector.inherit(inherit);
-        servicesForSession.forEach(service => {
-          injector.provide(service.options.name, service.default);
-        });
-        context?.install<IHookBind>('useService', useService, { services: injector.service() as ServiceLocator });
-      } else {
-        servicesForProcess.forEach(service => {
-          injector.provide(service.options.name, service.default);
-        });
-      }
+      const servicesForProcess = services.filter(service => service.options.scope === EServiceScope.Process);
+      servicesForProcess.forEach(service => {
+        injector.provide(service.options.name, service.default);
+      });
+      return injector;
+    },
+
+    buildInjectorForSession: (inherit, context) => {
+      const injector = createInjector();
+      injector.inherit(inherit);
+      const servicesForSession = services.filter(service => service.options.scope === EServiceScope.Session);
+      servicesForSession.forEach(service => {
+        injector.provide(service.options.name, service.default);
+      });
+      context?.install<IHookBind>('useService', useService, { services: injector.service() as ServiceLocator });
       return injector;
     }
   };
