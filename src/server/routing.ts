@@ -21,7 +21,7 @@ interface IRefAction {
   default: ActionFnInner;
   options: {
     routes: IRoute[];
-    global?: boolean;
+    global?: 'error';
   };
 }
 
@@ -104,12 +104,7 @@ export async function mountRouting(config: IAppConfig): Promise<{
       router.on(route.method, route.path, routeFn);
       // register global routes
       if (route.method === 'GET' && global) {
-        const routeKey = {
-          '/error': 'error'
-        }[route.path];
-        if (routeKey) {
-          globalRoutes[routeKey] = routeFn;
-        }
+        globalRoutes[global] = routeFn;
       }
     });
   });
@@ -139,15 +134,13 @@ export async function mountRouting(config: IAppConfig): Promise<{
         outgoingMessage = catchError(undefined, 404);
       }
 
-      if (outgoingMessage.error) {
-        if (globalRoutes.error) {
-          // sorry to copy outgoingMessage as fake params type
-          const params = { ...outgoingMessage } as unknown as Record<string, string>;
-          outgoingMessage = await globalRoutes.error(request, response, params, context, {}).catch((error: unknown) => {
-            console.error('error occurred in global error handling', error);
-            return catchError(error);
-          });
-        }
+      if (globalRoutes.error) {
+        // sorry to copy outgoingMessage as fake params type
+        const params = outgoingMessage as unknown as Record<string, string>;
+        outgoingMessage = await globalRoutes.error(request, response, params, context, {}).catch((error: unknown) => {
+          console.error('error occurred in global error action', error);
+          return catchError(error);
+        });
       }
 
       if (!outgoingMessage) {

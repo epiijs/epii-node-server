@@ -34,7 +34,7 @@ export async function startServer(config: IMaybeAppConfig): Promise<IStartupResu
     const context = buildContext();
 
     context.install('getAppConfig', () => {
-      // TODO: wrap read only
+      // TODO: wrap config as read only
       return verifiedConfig;
     }, undefined);
 
