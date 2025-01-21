@@ -1,22 +1,14 @@
-import http from 'http';
+import http, { IncomingHttpHeaders } from 'http';
 import stream, { Readable } from 'stream';
 
 import { BufferList } from 'bl';
+import { OutgoingHttpHeaders } from 'http2';
 
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 type ParamsValue = string | undefined;
-type HeaderValue = string | string[] | undefined;
 
 function isReadableStream(o: unknown): o is Readable {
   return o instanceof Readable;
-}
-
-function lowerCaseHeaderKeys(headers: http.IncomingHttpHeaders): Record<string, HeaderValue> {
-  const lowerCaseHeaders: Record<string, HeaderValue> = {};
-  for (const [key, value] of Object.entries(headers)) {
-    lowerCaseHeaders[key.toLowerCase()] = value;
-  }
-  return lowerCaseHeaders;
 }
 
 function readRawBody(request: http.IncomingMessage): Promise<Buffer> {
@@ -37,7 +29,7 @@ interface IIncomingMessage {
   url: string;
   params: Record<string, ParamsValue>;
   method: HTTPMethod;
-  headers: Record<string, HeaderValue>;
+  headers: IncomingHttpHeaders;
   query?: Record<string, string | undefined>;
   body?: Promise<Buffer>;
 }
@@ -49,7 +41,7 @@ export function buildIncomingMessage(message: http.IncomingMessage, params?: Rec
     url: message.url || '/',
     params: params || {},
     method: (message.method || 'GET').toUpperCase() as HTTPMethod,
-    headers: lowerCaseHeaderKeys(message.headers)
+    headers: message.headers
   };
 
   // TODO: check memory leak
@@ -81,7 +73,7 @@ type OutgoingMessageContent = string | Buffer | stream.Readable | null | undefin
 
 interface IOutgoingMessage {
   status: number;
-  headers: Record<string, HeaderValue>;
+  headers: OutgoingHttpHeaders;
   content: OutgoingMessageContent;
 }
 
@@ -143,7 +135,6 @@ export async function applyOutgoingMessage(message: IOutgoingMessage, response: 
 }
 
 export type {
-  HTTPMethod,
   IIncomingMessage,
   IOutgoingMessage,
   IncomingMessage,
