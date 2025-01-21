@@ -7,10 +7,9 @@ import { glob } from 'glob';
 import { IAppConfig } from '@epiijs/config';
 
 import { ActionFnInner, performAction } from './handler.js';
-import { IOutgoingMessage, applyOutgoingMessage, buildIncomingMessage, buildOutgoingMessage } from './message.js';
+import { HTTPMethod, IOutgoingMessage, applyOutgoingMessage, buildIncomingMessage, buildOutgoingMessage } from './message.js';
 import { importModule } from './require.js';
 
-type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 
 interface IRoute {
   method: HTTPMethod;
@@ -157,7 +156,6 @@ export async function mountRouting(config: IAppConfig): Promise<{
 }
 
 export type {
-  HTTPMethod,
   ActionDeclareResult,
   ActionDeclareFn
 };

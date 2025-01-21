@@ -3,8 +3,7 @@ import stream, { Readable } from 'stream';
 
 import { BufferList } from 'bl';
 
-import { HTTPMethod } from './routing.js';
-
+type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 type ParamsValue = string | undefined;
 type HeaderValue = string | string[] | undefined;
 
@@ -144,6 +143,7 @@ export async function applyOutgoingMessage(message: IOutgoingMessage, response: 
 }
 
 export type {
+  HTTPMethod,
   IIncomingMessage,
   IOutgoingMessage,
   IncomingMessage,
